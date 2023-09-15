@@ -223,7 +223,7 @@ class ModI18NTypeB_PassageMatcher {
                     // otherwise , we try to match and replace with fuzzy match in [-10~+30]
                     try {
                         let re: RegExp | undefined = new RegExp(ModI18NTypeB_escapedPatternString(v.from), '');
-                        re.lastIndex = v.pos;
+                        // re.lastIndex = v.pos;
                         const startPos = Math.max(0, v.pos - 10);
                         const endPos = Math.min(s.length, v.pos + v.from.length + 30);
                         const mm = re.exec(s.substring(startPos, endPos));
