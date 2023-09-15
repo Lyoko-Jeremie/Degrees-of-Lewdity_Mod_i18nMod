@@ -44,6 +44,31 @@ function ModI18NTypeB_ignoreSpaceString(pattern: string) {
     return ['\\s*', ...cc, '\\s*'].join('');
 }
 
+// GPT-4
+function fuzzyMatchManual(strA: string, strB: string, startIndex = 0) {
+    let j = startIndex;
+
+    // 去除字符串B中的空白字符
+    const b = strB.replace(/\s+/g, '');
+
+    for (let i = 0; i < b.length; i++) {
+        // 跳过字符串A中的空白字符
+        while (j < strA.length && /\s/.test(strA[j])) {
+            j++;
+        }
+
+        // 如果字符串A已经结束，但字符串B还没有，返回-1
+        if (j >= strA.length) return -1;
+
+        // 比较两个字符，如果不同，返回-1
+        if (strA[j] !== b[i]) return -1;
+
+        j++;
+    }
+
+    return j;
+}
+
 // original StoryScript -> (dontTrim/Trim) -> (dontTrimTag/TrimTag) Trim or not in original string -> match `from:string` -> notMatchRegex filer -> replace use to string
 interface TypeBInputStoryScript {
     from: string;
@@ -134,9 +159,7 @@ class ModI18NTypeB_PassageMatcher {
         this.passagebuffer = new Map<string, TypeBInputStoryScript[]>();
 
         mt.forEach((v) => {
-            const rs = ModI18NTypeB_ignoreSpaceString(v.from);
             // console.log('ModI18NTypeB_PassageMatcher constructor', [v.from], rs);
-            v.searchPatternRegex = new RegExp(rs, 'y');
             if (this.passagebuffer.has(v.passageName)) {
                 this.passagebuffer.get(v.passageName)!.push(v);
             } else {
@@ -173,16 +196,29 @@ class ModI18NTypeB_PassageMatcher {
             // console.log('ModI18NTypeB_PassageMatcher replacePassageContent before:', [s]);
             for (const v of pp) {
                 // console.log(v.passageName, v.pos, v.from.length);
+
                 // TODO NOTE this is a temp fix
                 // s = s.substring(0, Math.max(0, v.pos - 2)) + v.to + s.substring(Math.max(0, v.pos - 1) + v.from.length);
+
                 // s = s.substring(0, v.pos) + v.to + s.substring(v.pos + v.from.length);
-                if (v.searchPatternRegex) {
-                    v.searchPatternRegex.lastIndex = v.pos - 2;
-                    s = s.replace(v.searchPatternRegex, v.to);
-                    v.searchPatternRegex.lastIndex = 0;
-                } else {
-                    console.error('v.searchPatternRegex is undefined', v);
+
+                let re: RegExp | undefined = new RegExp(ModI18NTypeB_ignoreSpaceString(v.from), '');
+                re.lastIndex = v.pos - 2;
+                const mm = re.exec(s);
+                if (mm) {
+                    if (mm.index > v.pos + 5) {
+                        // too far
+                    } else {
+                        re.lastIndex = v.pos - 2;
+                        s = s.replace(re, v.to);
+                    }
                 }
+                re = undefined;
+
+                // const lastI = fuzzyMatchManual(s, v.from, Math.max(0, v.pos - 2));
+                // if (lastI !== -1) {
+                //     s = s.substring(0, Math.max(0, v.pos - 2)) + v.to + s.substring(lastI + v.from.length);
+                // }
             }
             console.log('ModI18NTypeB_PassageMatcher replacePassageContent after:', [s]);
             return s;
