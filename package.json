@@ -4,8 +4,7 @@
   "description": "SugarCube2 i18n Mod",
   "private": true,
   "scripts": {
-    "ts:w": "tsc -w -p ./tsconfig.json",
-    "webpack:w": "webpack -w -c ./webpack.config.js"
+    "ts:w": "tsc -w -p ./tsconfig.json"
   },
   "packageManager": "yarn@3.4.1",
   "dependencies": {
