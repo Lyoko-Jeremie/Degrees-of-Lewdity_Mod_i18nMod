@@ -207,6 +207,8 @@ class ModI18NTypeB_PassageMatcher {
                 // s = s.substring(0, Math.max(0, v.pos - 2)) + v.to + s.substring(Math.max(0, v.pos - 1) + v.from.length);
 
                 // s = s.substring(0, v.pos) + v.to + s.substring(v.pos + v.from.length);
+
+                // first , we try to match and replace with const string in +-2 , this is the fastest way
                 if (s.substring(v.pos, v.pos + v.from.length) === v.from) {
                     s = s.substring(0, v.pos) + v.to + s.substring(v.pos + v.from.length);
                 } else if (s.substring(v.pos - 1, v.pos + v.from.length - 1) === v.from) {
@@ -218,12 +220,15 @@ class ModI18NTypeB_PassageMatcher {
                 } else if (s.substring(v.pos + 2, v.pos + v.from.length + 2) === v.from) {
                     s = s.substring(0, v.pos + 2) + v.to + s.substring(v.pos + 2 + v.from.length);
                 } else {
+                    // otherwise , we try to match and replace with fuzzy match in [-10~+30]
                     try {
                         let re: RegExp | undefined = new RegExp(ModI18NTypeB_escapedPatternString(v.from), '');
                         re.lastIndex = v.pos;
-                        const mm = re.exec(s.substring(v.pos - 10, v.pos + v.from.length + 30));
+                        const startPos = Math.max(0, v.pos - 10);
+                        const endPos = Math.min(s.length, v.pos + v.from.length + 30);
+                        const mm = re.exec(s.substring(startPos, endPos));
                         if (mm) {
-                            const pStart = v.pos - 10 + mm.index;
+                            const pStart = startPos + mm.index;
                             const pEnd = pStart + v.from.length;
                             s = s.substring(0, pStart) + v.to + s.substring(pEnd);
                         } else {
