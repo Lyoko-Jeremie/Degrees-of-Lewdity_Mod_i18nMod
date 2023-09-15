@@ -7,8 +7,14 @@ interface TypeBOutputText {
     searchPatternRegex?: RegExp;
 }
 
+// come from GPT-4
 function ModI18NTypeB_normalizeSearchPattern(pattern: string): RegExp {
     return new RegExp(ModI18NTypeB_normalizeSearchString(pattern), 'g');
+}
+
+// come from GPT-4
+function ModI18NTypeB_escapedPatternString(pattern: string): string {
+    return pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 // come from GPT-4
@@ -212,8 +218,24 @@ class ModI18NTypeB_PassageMatcher {
                 } else if (s.substring(v.pos + 2, v.pos + v.from.length + 2) === v.from) {
                     s = s.substring(0, v.pos + 2) + v.to + s.substring(v.pos + 2 + v.from.length);
                 } else {
-                    console.error('ModI18NTypeB_PassageMatcher replacePassageContent cannot find: ',
-                        [v.from], ' in ', [passageName], ' at ', [v.pos], ' in ', [s.substring(v.pos - 10, v.pos + v.from.length + 10)]);
+                    try {
+                        let re: RegExp | undefined = new RegExp(ModI18NTypeB_escapedPatternString(v.from), '');
+                        re.lastIndex = v.pos;
+                        const mm = re.exec(s.substring(v.pos - 10, v.pos + v.from.length + 30));
+                        if (mm) {
+                            const pStart = v.pos - 10 + mm.index;
+                            const pEnd = pStart + v.from.length;
+                            s = s.substring(0, pStart) + v.to + s.substring(pEnd);
+                        } else {
+                            console.error('ModI18NTypeB_PassageMatcher replacePassageContent cannot find: ',
+                                [v.from], ' in ', [passageName], ' at ', [v.pos], ' in ', [s.substring(v.pos - 10, v.pos + v.from.length + 10)]);
+                        }
+                        re = undefined;
+                    } catch (e) {
+                        console.error(e);
+                        console.error('ModI18NTypeB_PassageMatcher replacePassageContent cannot find with error: ',
+                            [v.from], ' in ', [passageName], ' at ', [v.pos], ' in ', [s.substring(v.pos - 10, v.pos + v.from.length + 10)]);
+                    }
                 }
 
                 // let re: RegExp | undefined = new RegExp(ModI18NTypeB_ignoreSpaceString(v.from), '');
