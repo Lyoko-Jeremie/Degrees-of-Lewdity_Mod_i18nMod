@@ -1,0 +1,28 @@
+{
+  "name": "ModI18N",
+  "version": "1.0.0",
+  "styleFileList": [
+  ],
+  "scriptFileList_earlyload": [
+    "dist/earlyload/earlyload.js"
+  ],
+  "scriptFileList_inject_early": [
+    "node_modules/jszip/dist/jszip.js",
+    "dist/TypeB.js",
+    "dist/I18N.js"
+  ],
+  "scriptFileList_preload": [
+  ],
+  "scriptFileList": [
+  ],
+  "tweeFileList": [
+  ],
+  "imgFileList": [
+  ],
+  "imgFileReplaceList": [
+  ],
+  "addstionFile": [
+    "README.md",
+    "i18n.json"
+  ]
+}
