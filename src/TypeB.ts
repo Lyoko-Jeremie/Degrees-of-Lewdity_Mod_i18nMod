@@ -201,26 +201,40 @@ class ModI18NTypeB_PassageMatcher {
                 // s = s.substring(0, Math.max(0, v.pos - 2)) + v.to + s.substring(Math.max(0, v.pos - 1) + v.from.length);
 
                 // s = s.substring(0, v.pos) + v.to + s.substring(v.pos + v.from.length);
-
-                let re: RegExp | undefined = new RegExp(ModI18NTypeB_ignoreSpaceString(v.from), '');
-                re.lastIndex = v.pos - 2;
-                const mm = re.exec(s);
-                if (mm) {
-                    if (mm.index > v.pos + 5) {
-                        // too far
-                    } else {
-                        re.lastIndex = v.pos - 2;
-                        s = s.replace(re, v.to);
-                    }
+                if (s.substring(v.pos, v.pos + v.from.length) === v.from) {
+                    s = s.substring(0, v.pos) + v.to + s.substring(v.pos + v.from.length);
+                } else if (s.substring(v.pos - 1, v.pos + v.from.length - 1) === v.from) {
+                    s = s.substring(0, v.pos - 1) + v.to + s.substring(v.pos - 1 + v.from.length);
+                } else if (s.substring(v.pos - 2, v.pos + v.from.length - 2) === v.from) {
+                    s = s.substring(0, v.pos - 2) + v.to + s.substring(v.pos - 2 + v.from.length);
+                } else if (s.substring(v.pos + 1, v.pos + v.from.length + 1) === v.from) {
+                    s = s.substring(0, v.pos + 1) + v.to + s.substring(v.pos + 1 + v.from.length);
+                } else if (s.substring(v.pos + 2, v.pos + v.from.length + 2) === v.from) {
+                    s = s.substring(0, v.pos + 2) + v.to + s.substring(v.pos + 2 + v.from.length);
+                } else {
+                    console.error('ModI18NTypeB_PassageMatcher replacePassageContent cannot find: ',
+                        [v.from], ' in ', [passageName], ' at ', [v.pos], ' in ', [s.substring(v.pos - 10, v.pos + v.from.length + 10)]);
                 }
-                re = undefined;
+
+                // let re: RegExp | undefined = new RegExp(ModI18NTypeB_ignoreSpaceString(v.from), '');
+                // re.lastIndex = v.pos - 2;
+                // const mm = re.exec(s);
+                // if (mm) {
+                //     if (mm.index > v.pos + 5) {
+                //         // too far
+                //     } else {
+                //         re.lastIndex = v.pos - 2;
+                //         s = s.replace(re, v.to);
+                //     }
+                // }
+                // re = undefined;
 
                 // const lastI = fuzzyMatchManual(s, v.from, Math.max(0, v.pos - 2));
                 // if (lastI !== -1) {
                 //     s = s.substring(0, Math.max(0, v.pos - 2)) + v.to + s.substring(lastI + v.from.length);
                 // }
             }
-            console.log('ModI18NTypeB_PassageMatcher replacePassageContent after:', [s]);
+            // console.log('ModI18NTypeB_PassageMatcher replacePassageContent after:', [s]);
             return s;
         }
         return passageContent;
