@@ -23,6 +23,27 @@ function ModI18NTypeB_normalizeSearchString(pattern: string) {
     return p;
 }
 
+// come from GPT-4
+function ModI18NTypeB_ignoreSpaceString(pattern: string) {
+    // 转义正则表达式中的特殊字符
+    const escapedPattern = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // 转换空格
+    // return escapedPattern.replace(/\s+/g, '\\s*');
+    // return escapedPattern.split('').map(c => c.trim() ? c + '\\s*' : '').join('');
+    const cc = escapedPattern.split('');
+    for (let i = 0; i < cc.length; i++) {
+        const ct = cc[i].trim();
+        if (ct === '') {
+            cc[i] = '';
+        } else if (ct !== '\\') {
+            cc[i] = cc[i] + '\\s*';
+        } else {
+            cc[i] = cc[i];
+        }
+    }
+    return ['\\s*', ...cc, '\\s*'].join('');
+}
+
 // original StoryScript -> (dontTrim/Trim) -> (dontTrimTag/TrimTag) Trim or not in original string -> match `from:string` -> notMatchRegex filer -> replace use to string
 interface TypeBInputStoryScript {
     from: string;
@@ -36,6 +57,8 @@ interface TypeBInputStoryScript {
 
     // pos in passage
     pos: number;
+
+    searchPatternRegex?: RegExp;
 }
 
 class ModI18NTypeB_OutputTextMatcher {
@@ -74,7 +97,7 @@ class ModI18NTypeB_OutputTextMatcher {
             let replacedIndices = new Set<number>();
 
             let s = text;
-            matches.forEach((m) => {
+            for (const m of matches) {
                 let overlap = false;
 
                 for (let i = m.index; i < m.index + m.value.length; i++) {
@@ -93,7 +116,7 @@ class ModI18NTypeB_OutputTextMatcher {
                         replacedIndices.add(i);
                     }
                 }
-            });
+            }
 
         }
 
@@ -111,6 +134,9 @@ class ModI18NTypeB_PassageMatcher {
         this.passagebuffer = new Map<string, TypeBInputStoryScript[]>();
 
         mt.forEach((v) => {
+            const rs = ModI18NTypeB_ignoreSpaceString(v.from);
+            // console.log('ModI18NTypeB_PassageMatcher constructor', [v.from], rs);
+            v.searchPatternRegex = new RegExp(rs, 'y');
             if (this.passagebuffer.has(v.passageName)) {
                 this.passagebuffer.get(v.passageName)!.push(v);
             } else {
@@ -143,13 +169,20 @@ class ModI18NTypeB_PassageMatcher {
         const pp = this.getByPassage(passageName);
         if (pp) {
             let s = passageContent;
-            console.log('ModI18NTypeB_PassageMatcher replacePassageContent passageName:', passageName);
-            console.log('ModI18NTypeB_PassageMatcher replacePassageContent before:', [s]);
+            // console.log('ModI18NTypeB_PassageMatcher replacePassageContent passageName:', passageName);
+            // console.log('ModI18NTypeB_PassageMatcher replacePassageContent before:', [s]);
             for (const v of pp) {
                 // console.log(v.passageName, v.pos, v.from.length);
                 // TODO NOTE this is a temp fix
-                s = s.substring(0, Math.max(0, v.pos - 2)) + v.to + s.substring(Math.max(0, v.pos - 1) + v.from.length);
+                // s = s.substring(0, Math.max(0, v.pos - 2)) + v.to + s.substring(Math.max(0, v.pos - 1) + v.from.length);
                 // s = s.substring(0, v.pos) + v.to + s.substring(v.pos + v.from.length);
+                if (v.searchPatternRegex) {
+                    v.searchPatternRegex.lastIndex = v.pos - 2;
+                    s = s.replace(v.searchPatternRegex, v.to);
+                    v.searchPatternRegex.lastIndex = 0;
+                } else {
+                    console.error('v.searchPatternRegex is undefined', v);
+                }
             }
             console.log('ModI18NTypeB_PassageMatcher replacePassageContent after:', [s]);
             return s;
@@ -187,7 +220,12 @@ class ModI18NTypeB {
             return text;
         }
         // console.log('replaceOutputText input text ==>>', [text], text);
-        return this.outputTextMatchBuffer.tryReplace(text);
+        try {
+            return this.outputTextMatchBuffer.tryReplace(text);
+        } catch (e) {
+            console.error(e);
+            return text;
+        }
     }
 
     replaceInputStoryScript(text: string, passageName: string): string {
@@ -196,7 +234,11 @@ class ModI18NTypeB {
             return text;
         }
         if (passageName) {
-            return this.inputStoryMatchBuffer.replacePassageContent(passageName, text);
+            try {
+                return this.inputStoryMatchBuffer.replacePassageContent(passageName, text);
+            } catch (e) {
+                console.error(e);
+            }
         }
         return text;
     }
