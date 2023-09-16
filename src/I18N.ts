@@ -71,7 +71,9 @@ class ModI18N {
 
                     // start replace
                     const sc2DataCache = this.modSC2DataManager.getSC2DataInfoAfterPatch();
+                    // console.log('i18nJson sc2DataCache', sc2DataCache);
                     const sc2Data = sc2DataCache.cloneSC2DataInfo();
+                    // console.log('i18nJson sc2Data', sc2Data);
 
                     for (const T of sc2Data.styleFileItems.items) {
                         T.content = this.typeB.replaceCss(T.content, T.name);
