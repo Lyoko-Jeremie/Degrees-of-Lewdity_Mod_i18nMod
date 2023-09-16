@@ -33,7 +33,7 @@ class ModI18N {
     }
 
     async readZipSelf() {
-        const ogrinPassageData = structuredClone(this.modSC2DataManager.getSC2DataInfoCache().passageDataItems.items);
+        // const ogrinPassageData = structuredClone(this.modSC2DataManager.getSC2DataInfoAfterPatch().passageDataItems.items);
 
         const zips = this.modSC2DataManager.getModLoader().getModZipLoader()?.getZipFile('ModI18N');
         if (zips && zips.length > 0) {
@@ -70,7 +70,7 @@ class ModI18N {
                     this.typeB = new ModI18NTypeB(cc[0], cc[1]);
 
                     // start replace
-                    const sc2Data = this.modSC2DataManager.getSC2DataInfoCache();
+                    const sc2Data = this.modSC2DataManager.getSC2DataInfoAfterPatch();
                     const passageDataItems = sc2Data.passageDataItems;
                     const passageDataItemsItems = structuredClone(passageDataItems.items);
                     for (const pd of passageDataItemsItems) {
