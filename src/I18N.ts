@@ -70,14 +70,24 @@ class ModI18N {
                     this.typeB = new ModI18NTypeB(cc[0], cc[1]);
 
                     // start replace
-                    const sc2Data = this.modSC2DataManager.getSC2DataInfoAfterPatch();
-                    const passageDataItems = sc2Data.passageDataItems;
-                    const passageDataItemsItems = structuredClone(passageDataItems.items);
-                    for (const pd of passageDataItemsItems) {
+                    const sc2DataCache = this.modSC2DataManager.getSC2DataInfoAfterPatch();
+                    const sc2Data = sc2DataCache.cloneSC2DataInfo();
+
+                    for (const T of sc2Data.styleFileItems.items) {
+                        T.content = this.typeB.replaceCss(T.content, T.name);
+                    }
+                    for (const T of sc2Data.scriptFileItems.items) {
+                        T.content = this.typeB.replaceJs(T.content, T.name);
+                    }
+
+                    for (const pd of sc2Data.passageDataItems.items) {
                         pd.content = this.typeB.replaceInputStoryScript(pd.content, pd.name);
                     }
-                    console.log('passageDataItemsItems', passageDataItemsItems);
-                    this.modUtils.updatePassageDataManyEarly(passageDataItemsItems, sc2Data);
+
+                    console.log('sc2DataCache', sc2DataCache);
+                    console.log('sc2Data', sc2Data);
+                    this.modUtils.replaceFollowSC2DataInfo(sc2Data, sc2DataCache);
+
                 }
             }
         } else {
