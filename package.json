@@ -4,7 +4,8 @@
   "description": "SugarCube2 i18n Mod",
   "private": true,
   "scripts": {
-    "ts:w": "tsc -w -p ./tsconfig.json"
+    "ts:w": "tsc -w -p ./src/tsconfig.json",
+    "ts:tool:w": "tsc -w -p ./tool/tsconfig.json"
   },
   "packageManager": "yarn@3.4.1",
   "dependencies": {
