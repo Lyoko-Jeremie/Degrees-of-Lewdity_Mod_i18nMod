@@ -35,7 +35,7 @@ class ModI18N {
     async readZipSelf() {
         // const ogrinPassageData = structuredClone(this.modSC2DataManager.getSC2DataInfoAfterPatch().passageDataItems.items);
 
-        const zips = this.modSC2DataManager.getModLoader().getModZipLoader()?.getZipFile('ModI18N');
+        const zips = this.modSC2DataManager.getModLoader().getModZip('ModI18N');
         if (zips && zips.length > 0) {
 
             let selfZip;
