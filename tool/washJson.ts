@@ -110,6 +110,7 @@ interface RRRRR {
                 return;
             } else {
                 // ignore
+                console.log('ignore', T);
             }
         });
     }
@@ -120,6 +121,7 @@ interface RRRRR {
     console.log('TypeBInputStoryScript', rr.TypeBInputStoryScript.length);
     console.log('TypeBOutputText', rr.TypeBOutputText.length);
     const objString = JSON.stringify({typeB: rr}, undefined, ' ');
+    console.log(objString.length)
 
     await promisify(fs.writeFile)(jsonPath + '.wash.json', objString, {encoding: 'utf-8'});
 
