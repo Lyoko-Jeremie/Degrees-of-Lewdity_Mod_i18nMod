@@ -7,4 +7,6 @@ declare global {
         modSC2DataManager: SC2DataManager;
         modI18N: ModI18N;
     }
+
+    var StartConfig: any;
 }

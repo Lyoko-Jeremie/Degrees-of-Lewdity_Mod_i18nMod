@@ -32,6 +32,29 @@ class ModI18N {
         return undefined;
     }
 
+    patchVersionString() {
+
+        const zips = this.modSC2DataManager.getModLoader().getModZip('ModI18N');
+        if (zips && zips.length > 0) {
+
+            let selfZip;
+            for (let i = 0; i < zips.length; i++) {
+                const zip = zips[i];
+                const info = zip.getModInfo();
+                console.log(' bootJson :', [info?.bootJson]);
+                if (info?.bootJson?.addstionFile.find(T => T === 'i18n.json')) {
+                    selfZip = zip;
+                    break;
+                }
+            }
+            if (selfZip) {
+                if (selfZip.modInfo && selfZip.modInfo.version) {
+                    StartConfig.version = `${StartConfig.version}-(chs-${selfZip.modInfo.version})`;
+                }
+            }
+        }
+    }
+
     async readZipSelf() {
         // const ogrinPassageData = structuredClone(this.modSC2DataManager.getSC2DataInfoAfterPatch().passageDataItems.items);
 

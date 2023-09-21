@@ -9,6 +9,7 @@
   },
   "packageManager": "yarn@3.4.1",
   "dependencies": {
+    "@types/jquery": "^3.5.19",
     "json5": "^2.2.3",
     "jszip": "^3.10.1",
     "lodash": "^4.17.21"

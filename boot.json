@@ -1,6 +1,6 @@
 {
   "name": "ModI18N",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "styleFileList": [
   ],
   "scriptFileList_earlyload": [
@@ -12,6 +12,7 @@
     "dist/I18N.js"
   ],
   "scriptFileList_preload": [
+    "dist/preload/preload.js"
   ],
   "scriptFileList": [
   ],
