@@ -1,4 +1,4 @@
-.yarn/*
+﻿.yarn/*
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
@@ -19,5 +19,7 @@ label
 !label/.gitkeep
 dist*
 
-i18n.json
+i18n*.json
+i18n*.json*
+integrated_dict*.json
 *.zip
