@@ -42,7 +42,7 @@ class ModI18N {
                 const zip = zips[i];
                 const info = zip.getModInfo();
                 console.log(' bootJson :', [info?.bootJson]);
-                if (info?.bootJson?.addstionFile.find(T => T === 'i18n.json')) {
+                if (info?.bootJson?.additionFile.find(T => T === 'i18n.json')) {
                     selfZip = zip;
                     break;
                 }
@@ -66,7 +66,7 @@ class ModI18N {
                 const zip = zips[i];
                 const info = zip.getModInfo();
                 console.log(' bootJson :', [info?.bootJson]);
-                if (info?.bootJson?.addstionFile.find(T => T === 'i18n.json')) {
+                if (info?.bootJson?.additionFile.find(T => T === 'i18n.json')) {
                     selfZip = zip;
                     break;
                 }
