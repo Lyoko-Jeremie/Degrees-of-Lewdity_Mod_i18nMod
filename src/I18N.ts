@@ -8,18 +8,52 @@ class ModI18N {
     modUtils = window.modUtils;
     modSC2DataManager = window.modSC2DataManager;
 
+    _ = window.modUtils.getLodash();
+
     constructor() {
+    }
+
+
+    checkItem(t: TypeBInputStoryScript) {
+        let c = t
+            && this._.isString(this._.get(t, 'f'))
+            && this._.isString(this._.get(t, 't'))
+            && this._.isNumber(this._.get(t, 'pos'));
+        if (t.passageName) {
+            c = c && this._.isString(t.passageName);
+        }
+        if (this._.has(t, 'pN')) {
+            c = c && this._.isString(this._.get(t, 'pN'));
+        }
+        if (t.css || t.js) {
+            c = c && this._.isString(t.fileName);
+        }
+        // console.log('checkItem', [c, [
+        //     this._.isString(this._.get(t, 'f')),
+        //     this._.isString(this._.get(t, 't')),
+        //     this._.isNumber(this._.get(t, 'pos')),
+        //     t.passageName ? this._.isString(t.passageName) : true,
+        //     this._.has(t, 'pN') ? this._.isString(this._.get(t, 'pN')) : true,
+        //     t.css || t.js ? this._.isString(t.fileName) : true,
+        // ]]);
+        return c;
     }
 
     private checkAndProcessData(T: any): [TypeBOutputText[], TypeBInputStoryScript[]] | undefined {
         if (T && T.typeB && T.typeB.TypeBOutputText && T.typeB.TypeBInputStoryScript) {
             const cacheTypeBOutputText = T.typeB.TypeBOutputText.map((T: any) => {
+                if (!this.checkItem(T)) {
+                    console.error('I18NMod checkAndProcessData TypeBOutputText (!this.checkItem(T))', T);
+                }
                 return Object.assign(T, {
                     from: T.f,
                     to: T.t,
                 });
             });
             const cacheTypeBInputStoryScript = T.typeB.TypeBInputStoryScript.map((T: any): TypeBInputStoryScript => {
+                if (!this.checkItem(T)) {
+                    console.error('I18NMod checkAndProcessData TypeBInputStoryScript (!this.checkItem(T))', T);
+                }
                 return Object.assign(T, {
                     from: T.f,
                     to: T.t,
