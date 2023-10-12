@@ -47,21 +47,6 @@
         "js": [
         ],
         "css": [
-          {
-            "from": "\"max-height: 2.4em;",
-            "to": "\"max-height: 7em;",
-            "fileName": "base.css"
-          },
-          {
-            "from": "content: \" months\";",
-            "to": "content: \" 月数\";",
-            "fileName": "base.css"
-          },
-          {
-            "from": "content: \" weeks\";",
-            "to": "content: \" 周数\";",
-            "fileName": "base.css"
-          }
         ],
         "twee": [
         ]
