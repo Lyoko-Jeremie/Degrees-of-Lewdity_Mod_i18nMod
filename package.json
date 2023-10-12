@@ -4,6 +4,7 @@
   "description": "SugarCube2 i18n Mod",
   "private": true,
   "scripts": {
+    "ts:build": "tsc -p ./src/tsconfig.json",
     "ts:w": "tsc -w -p ./src/tsconfig.json",
     "ts:tool:w": "tsc -w -p ./tool/tsconfig.json"
   },
