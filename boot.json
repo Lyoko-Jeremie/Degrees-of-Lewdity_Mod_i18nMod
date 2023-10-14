@@ -56,7 +56,11 @@
   "dependenceInfo": [
     {
       "modName": "ModLoader",
-      "version": "^1.2.2"
+      "version": "^1.5.3"
+    },
+    {
+      "modName": "GameVersion",
+      "version": "=0.4.2.7"
     },
     {
       "modName": "TweeReplacer",
