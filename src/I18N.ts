@@ -2,15 +2,15 @@
 /// <reference path="../../../dist-BeforeSC2/Utils.d.ts" />
 /// <reference path="./winDef.d.ts" />
 
-
 class ModI18N {
-
     modUtils = window.modUtils;
     modSC2DataManager = window.modSC2DataManager;
 
     _ = window.modUtils.getLodash();
+    logger;
 
     constructor() {
+        this.logger = this.modUtils.getLogger();
     }
 
 
@@ -92,6 +92,7 @@ class ModI18N {
     async readZipSelf() {
         // const ogrinPassageData = structuredClone(this.modSC2DataManager.getSC2DataInfoAfterPatch().passageDataItems.items);
 
+        this.logger.log('patching i18n mod ........');
         const zips = this.modSC2DataManager.getModLoader().getModZip('ModI18N');
         if (zips && zips.length > 0) {
 
