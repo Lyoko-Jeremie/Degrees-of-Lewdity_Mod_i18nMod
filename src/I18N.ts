@@ -154,22 +154,22 @@ class ModI18N {
                 }
 
                 // hook banner img
-                this.modSC2DataManager.getHtmlTagSrcHook().addHook('i18n_CN_Banner',
-                    async (el: HTMLImageElement | HTMLElement, mlSrc: string) => {
-                        if (!imgs) {
-                            return false;
-                        }
-                        if (mlSrc === 'img/misc/banner.png') {
-                            const n = imgs.find(T => T.path === 'banner_cn.png');
-                            if (n) {
-                                el.setAttribute('src', await n.getter.getBase64Image());
-                                return true;
-                            }
-                            this.logger.warn('i18n_CN_Banner cannot find banner img');
-                        }
-                        return false;
-                    }
-                );
+                // this.modSC2DataManager.getHtmlTagSrcHook().addHook('i18n_CN_Banner',
+                //     async (el: HTMLImageElement | HTMLElement, mlSrc: string) => {
+                //         if (!imgs) {
+                //             return false;
+                //         }
+                //         if (mlSrc === 'img/misc/banner.png') {
+                //             const n = imgs.find(T => T.path === 'banner_cn.png');
+                //             if (n) {
+                //                 el.setAttribute('src', await n.getter.getBase64Image());
+                //                 return true;
+                //             }
+                //             this.logger.warn('i18n_CN_Banner cannot find banner img');
+                //         }
+                //         return false;
+                //     }
+                // );
             }
         } else {
             console.log('I18NMod cannot read zip self');
