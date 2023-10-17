@@ -19,8 +19,7 @@
   "tweeFileList": [
   ],
   "imgFileList": [
-    "img/misc/banner.png",
-    "banner_cn.png"
+    "img/misc/banner.png"
   ],
   "additionFile": [
     "README.md",
@@ -46,6 +45,13 @@
         "twee": [
         ]
       }
+    },
+    {
+      "modName": "ModLoader DoL ImageLoaderHook",
+      "addonName": "ImageLoaderAddon",
+      "modVersion": "^2.3.0",
+      "params": [
+      ]
     }
   ],
   "dependenceInfo": [
@@ -60,6 +66,10 @@
     {
       "modName": "TweeReplacer",
       "version": "^1.0.0"
+    },
+    {
+      "modName": "ModLoader DoL ImageLoaderHook",
+      "version": "^2.3.0"
     }
   ]
 }
