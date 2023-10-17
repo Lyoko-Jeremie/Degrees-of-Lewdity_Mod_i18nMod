@@ -12,8 +12,8 @@
 
 node_modules
 dist
-img
-!img/.gitkeep
+#img
+#!img/.gitkeep
 label
 !label/type.json5
 !label/.gitkeep
@@ -23,3 +23,5 @@ i18n*.json
 i18n*.json*
 integrated_dict*.json
 *.zip
+
+!img/misc/banner.png
