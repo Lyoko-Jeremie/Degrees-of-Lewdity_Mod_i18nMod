@@ -1,5 +1,6 @@
 /// <reference path="../../../dist-BeforeSC2/SC2DataManager.d.ts" />
 /// <reference path="../../../dist-BeforeSC2/Utils.d.ts" />
+/// <reference path="../../../dist-BeforeSC2/ModLoader.d.ts" />
 /// <reference path="./winDef.d.ts" />
 
 class ModI18N {
@@ -92,6 +93,8 @@ class ModI18N {
     async readZipSelf() {
         // const ogrinPassageData = structuredClone(this.modSC2DataManager.getSC2DataInfoAfterPatch().passageDataItems.items);
 
+        const imgs = this.modSC2DataManager.getModLoader().getMod('ModI18N')?.imgs;
+
         this.logger.log('patching i18n mod ........');
         const zips = this.modSC2DataManager.getModLoader().getModZip('ModI18N');
         if (zips && zips.length > 0) {
@@ -149,6 +152,24 @@ class ModI18N {
                     this.modUtils.replaceFollowSC2DataInfo(sc2Data, sc2DataCache);
 
                 }
+
+                // hook banner img
+                this.modSC2DataManager.getHtmlTagSrcHook().addHook('i18n_CN_Banner',
+                    async (el: HTMLImageElement | HTMLElement, mlSrc: string) => {
+                        if (!imgs) {
+                            return false;
+                        }
+                        if (mlSrc === 'img/misc/banner.png') {
+                            const n = imgs.find(T => T.path === 'banner_cn.png');
+                            if (n) {
+                                el.setAttribute('src', await n.getter.getBase64Image());
+                                return true;
+                            }
+                            this.logger.warn('i18n_CN_Banner cannot find banner img');
+                        }
+                        return false;
+                    }
+                );
             }
         } else {
             console.log('I18NMod cannot read zip self');

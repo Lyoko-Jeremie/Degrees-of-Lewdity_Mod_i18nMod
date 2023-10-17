@@ -3,5 +3,6 @@
 
     window.modI18N = new ModI18N();
 
-    return window.modI18N.readZipSelf();
+    await window.modI18N.readZipSelf();
+
 })();
