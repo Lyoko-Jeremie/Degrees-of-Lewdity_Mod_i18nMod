@@ -1,6 +1,6 @@
 {
   "name": "ModI18N",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "styleFileList": [
   ],
   "scriptFileList_earlyload": [
@@ -57,7 +57,7 @@
   "dependenceInfo": [
     {
       "modName": "ModLoader",
-      "version": "^1.6.0"
+      "version": "^2.0.0"
     },
     {
       "modName": "GameVersion",
