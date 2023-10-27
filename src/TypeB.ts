@@ -231,7 +231,8 @@ class ModI18NTypeB_PassageMatcher {
 
         // 处理长度不同的情况
         if ((src.length - offset) < target.length) return -1;
-        if ((src.length - offset) > target.length) return 1;
+        //这里说明全部匹配了，所以是相等
+        //if ((src.length - offset) > target.length) return 1;
 
         return 0;  // 如果两个字符串相等，返回 0
     }
