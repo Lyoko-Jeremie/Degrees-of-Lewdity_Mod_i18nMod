@@ -217,17 +217,37 @@ class ModI18NTypeB_PassageMatcher {
         return passageContent;
     }
 
+    static strcmpOffset(src: string, target: string, offset: number = 0): number {
+        // 确保偏移量在合理范围内
+        if (offset < 0 || offset >= src.length) {
+            return -1;
+        }
+
+        // 使用循环进行字符比较
+        for (let i = offset, j = 0; i < src.length && j < target.length; i++, j++) {
+            if (src[i] < target[j]) return -1;
+            if (src[i] > target[j]) return 1;
+        }
+
+        // 处理长度不同的情况
+        if ((src.length - offset) < target.length) return -1;
+        //这里说明全部匹配了，所以是相等
+        //if ((src.length - offset) > target.length) return 1;
+
+        return 0;  // 如果两个字符串相等，返回 0
+    }
+
     static tryReplaceStringFuzzyWithHint(s: string, v: { from: string, to: string, pos: number }, passageNameOrFileName: string) {
         // first , we try to match and replace with const string in +-2 , this is the fastest way
-        if (s.substring(v.pos, v.pos + v.from.length) === v.from) {
+        if (ModI18NTypeB_PassageMatcher.strcmpOffset(s, v.from, v.pos) == 0) {
             s = s.substring(0, v.pos) + v.to + s.substring(v.pos + v.from.length);
-        } else if (s.substring(v.pos - 1, v.pos + v.from.length - 1) === v.from) {
+        } else if (ModI18NTypeB_PassageMatcher.strcmpOffset(s, v.from, v.pos - 1) == 0) {
             s = s.substring(0, v.pos - 1) + v.to + s.substring(v.pos - 1 + v.from.length);
-        } else if (s.substring(v.pos - 2, v.pos + v.from.length - 2) === v.from) {
+        } else if (ModI18NTypeB_PassageMatcher.strcmpOffset(s, v.from, v.pos - 2) == 0) {
             s = s.substring(0, v.pos - 2) + v.to + s.substring(v.pos - 2 + v.from.length);
-        } else if (s.substring(v.pos + 1, v.pos + v.from.length + 1) === v.from) {
+        } else if (ModI18NTypeB_PassageMatcher.strcmpOffset(s, v.from, v.pos + 1) == 0) {
             s = s.substring(0, v.pos + 1) + v.to + s.substring(v.pos + 1 + v.from.length);
-        } else if (s.substring(v.pos + 2, v.pos + v.from.length + 2) === v.from) {
+        } else if (ModI18NTypeB_PassageMatcher.strcmpOffset(s, v.from, v.pos + 2) == 0) {
             s = s.substring(0, v.pos + 2) + v.to + s.substring(v.pos + 2 + v.from.length);
         } else {
             // otherwise , we try to match and replace with fuzzy match in [-10~+30]
