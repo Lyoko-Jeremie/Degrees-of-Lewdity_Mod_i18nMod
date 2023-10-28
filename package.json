@@ -6,9 +6,12 @@
   "scripts": {
     "ts:build": "tsc -p ./src/tsconfig.json",
     "ts:w": "tsc -w -p ./src/tsconfig.json",
-    "ts:tool:w": "tsc -w -p ./tool/tsconfig.json"
+    "ts:tool:w": "tsc -w -p ./tool/tsconfig.json",
+    "======================2": "",
+    "build:ts": "tsc -p ./src/tsconfig.json",
+    "build:webpack": "echo \"noop\""
   },
-  "packageManager": "yarn@3.4.1",
+  "packageManager": "yarn@4.0.0",
   "dependencies": {
     "@types/jquery": "^3.5.19",
     "json5": "^2.2.3",
