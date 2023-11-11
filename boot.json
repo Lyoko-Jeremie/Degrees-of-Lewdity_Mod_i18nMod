@@ -4,15 +4,13 @@
   "styleFileList": [
   ],
   "scriptFileList_earlyload": [
+    "dist/i18nLoad.js",
     "dist/earlyload/earlyload.js"
   ],
   "scriptFileList_inject_early": [
-    "node_modules/jszip/dist/jszip.js",
-    "dist/TypeB.js",
-    "dist/I18N.js"
+    "node_modules/jszip/dist/jszip.js"
   ],
   "scriptFileList_preload": [
-    "dist/preload/preload.js"
   ],
   "scriptFileList": [
   ],
