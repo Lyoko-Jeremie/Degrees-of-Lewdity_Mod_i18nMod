@@ -144,6 +144,8 @@ export class ModI18N {
             this.typeB = new ModI18NTypeB(resultB, resultBInput);
 
             this.startReplace();
+
+            this.modSC2DataManager.getLanguageManager().mainLanguage = 'zh';
         }
     }
 
@@ -198,6 +200,8 @@ export class ModI18N {
                 this.typeB = new ModI18NTypeB(cc[0], cc[1]);
 
                 this.startReplace();
+
+                this.modSC2DataManager.getLanguageManager().mainLanguage = 'zh';
             }
 
         } else {
