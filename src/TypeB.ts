@@ -1,5 +1,5 @@
 // original OutputText -> (dontTrim/Trim) -> match `from:string` -> replace use to string
-interface TypeBOutputText {
+export interface TypeBOutputText {
     from: string;
     to: string;
 
@@ -80,7 +80,7 @@ function fuzzyMatchManual(strA: string, strB: string, startIndex = 0) {
 }
 
 // original StoryScript -> (dontTrim/Trim) -> (dontTrimTag/TrimTag) Trim or not in original string -> match `from:string` -> notMatchRegex filer -> replace use to string
-interface TypeBInputStoryScript {
+export interface TypeBInputStoryScript {
     from: string;
     to: string;
 
@@ -376,7 +376,7 @@ class ModI18NTypeB_JsCssMatcher {
 
 }
 
-class ModI18NTypeB {
+export class ModI18NTypeB {
 
     constructor(
         public OutputText: TypeBOutputText[],
