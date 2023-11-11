@@ -9,6 +9,7 @@
     "ts:tool:w": "tsc -w -p ./tool/tsconfig.json",
     "===============1": "",
     "ts:build": "tsc -p ./src_boot/tsconfig.json",
+    "build:webpack": "webpack -c ./webpack.config.js",
     "ts:tool": "tsc -p ./tool/tsconfig.json",
     "===============2": "",
     "ts:test": "tsc -p ./test/tsconfig.json",

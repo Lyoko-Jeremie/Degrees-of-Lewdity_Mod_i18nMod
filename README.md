@@ -9,6 +9,7 @@ Degrees-of-Lewdity 中文汉化Mod
 
 ```shell
 yarn run ts:w
+yarn run build:webpack
 ```
 
 ---
