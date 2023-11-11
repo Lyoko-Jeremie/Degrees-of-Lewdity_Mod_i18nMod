@@ -8,7 +8,7 @@ Degrees-of-Lewdity 中文汉化Mod
 编译脚本
 
 ```shell
-yarn run ts:w
+yarn run ts:build
 yarn run build:webpack
 ```
 
