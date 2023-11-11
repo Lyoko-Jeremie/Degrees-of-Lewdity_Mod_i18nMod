@@ -1,25 +1,25 @@
-/// <reference path="../../../dist-BeforeSC2/SC2DataManager.d.ts" />
-/// <reference path="../../../dist-BeforeSC2/Utils.d.ts" />
-/// <reference path="../../../dist-BeforeSC2/ModLoader.d.ts" />
-/// <reference path="./winDef.d.ts" />
+import type {SC2DataManager} from '../../../dist-BeforeSC2/SC2DataManager';
+import type {ModUtils} from '../../../dist-BeforeSC2/Utils';
+import type {LogWrapper} from "../../../dist-BeforeSC2/ModLoadController";
+import type {ModZipReader} from "../../../dist-BeforeSC2/ModZipReader";
+import type {SC2DataInfo, SC2DataInfoCache} from "../../../dist-BeforeSC2/SC2DataInfoCache";
 
-// 因为 @streamparser/json 无法正常工作，所以我这里改成了这样
-import {JSONParser} from "../node_modules/@streamparser/json/dist/mjs/index.js";//@streamparser/json
+import {JSONParser} from "@streamparser/json";
 import {TypeBOutputText, TypeBInputStoryScript, ModI18NTypeB} from "./TypeB";
 
 export class ModI18N {
-    modUtils = window.modUtils;
-    modSC2DataManager = window.modSC2DataManager;
+    modUtils: ModUtils = window.modUtils;
+    modSC2DataManager: SC2DataManager = window.modSC2DataManager;
 
     _ = window.modUtils.getLodash();
-    logger;
+    logger: LogWrapper;
 
     constructor() {
         this.logger = this.modUtils.getLogger();
     }
 
 
-    checkItem(t: any): t is TypeBInputStoryScript{
+    checkItem(t: any): t is TypeBInputStoryScript {
         let c = t
             && this._.isString(this._.get(t, 'f'))
             && this._.isString(this._.get(t, 't'))
@@ -73,7 +73,7 @@ export class ModI18N {
 
     patchVersionString() {
 
-        const selfZip = this.modSC2DataManager.getModLoader().getModZip('ModI18N');
+        const selfZip: ModZipReader | undefined = this.modSC2DataManager.getModLoader().getModZip('ModI18N');
         if (selfZip) {
             if (selfZip.modInfo && selfZip.modInfo.version) {
                 StartConfig.version = `${StartConfig.version}-(chs-${selfZip.modInfo.version})`;
@@ -93,13 +93,13 @@ export class ModI18N {
                 keepStack: false,
                 paths: ['$.typeB.TypeBOutputText.*', '$.typeB.TypeBInputStoryScript.*']
             });
-            let resultB : TypeBOutputText[]= [];
-            let resultBInput : TypeBInputStoryScript[] = [];
+            let resultB: TypeBOutputText[] = [];
+            let resultBInput: TypeBInputStoryScript[] = [];
 
             var maxusage = 0;
             parser.onValue = ({value, key, parent, stack}) => {
-                if(stack.length < 2) return;
-                if (stack[2].key === 'TypeBOutputText'){
+                if (stack.length < 2) return;
+                if (stack[2].key === 'TypeBOutputText') {
                     if (this.checkItem(value)) {
                         resultB.push({
                             // @ts-ignore
@@ -112,9 +112,7 @@ export class ModI18N {
                             js: value.js
                         });
                     }
-                }
-                else if(stack[2].key === 'TypeBInputStoryScript')
-                {
+                } else if (stack[2].key === 'TypeBInputStoryScript') {
                     if (this.checkItem(value)) {
                         resultBInput.push({
                             // @ts-ignore
@@ -137,7 +135,7 @@ export class ModI18N {
                     parent.length = 0;
                 }
             };
-            const zipStream = selfZip.zip.file('i18n.json')?.async("string").then((content : string) => {
+            const zipStream = selfZip.zip.file('i18n.json')?.async("string").then((content: string) => {
                 parser.write(content);
             });
             await zipStream;
@@ -149,13 +147,12 @@ export class ModI18N {
         }
     }
 
-    private startReplace()
-    {
+    private startReplace() {
         if (this.typeB === undefined) return;
         // start replace
-        const sc2DataCache = this.modSC2DataManager.getSC2DataInfoAfterPatch();
+        const sc2DataCache: SC2DataInfoCache = this.modSC2DataManager.getSC2DataInfoAfterPatch();
         // console.log('i18nJson sc2DataCache', sc2DataCache);
-        const sc2Data = sc2DataCache.cloneSC2DataInfo();
+        const sc2Data: SC2DataInfo = sc2DataCache.cloneSC2DataInfo();
         // console.log('i18nJson sc2Data', sc2Data);
 
         for (const T of sc2Data.styleFileItems.items) {

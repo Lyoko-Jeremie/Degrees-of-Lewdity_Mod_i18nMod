@@ -573,6 +573,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@streamparser/json@npm:^0.0.17":
+  version: 0.0.17
+  resolution: "@streamparser/json@npm:0.0.17"
+  checksum: 5e1cb2113d3393b5858a2d32133ba9efed2ea732100f9967c50ec6104bc4d4948546d3263cbdb6b69185a49420dc216fb5f341b38eaad57293d6693357036c46
+  languageName: node
+  linkType: hard
+
 "@tootallnate/once@npm:1":
   version: 1.1.2
   resolution: "@tootallnate/once@npm:1.1.2"
@@ -1100,6 +1107,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "SC2-i18n-Mod@workspace:."
   dependencies:
+    "@streamparser/json": ^0.0.17
     "@types/jquery": ^3.5.19
     "@types/lodash": ^4.14.198
     "@types/node": ^20.6.0

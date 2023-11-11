@@ -17,7 +17,7 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const webpack = require('webpack');
 
 const config = {
-  entry: './src/earlyload/initModule.ts',
+  entry: './src/init.ts',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'i18nLoad.js',
