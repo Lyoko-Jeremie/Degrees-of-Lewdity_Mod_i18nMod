@@ -139,9 +139,9 @@ export class ModI18N {
 
             //internalStream 在ts注解里面不存在，但是实际上是有这个方法的
             const logger = this.logger;
-            var previousPercent : Number = 0;
+            var previousPercent: Number = 0;
             // @ts-ignore
-            const stream : JSZipStreamHelper<string> = selfZip.zip.file("i18n.json")?.internalStream("string");
+            const stream: JSZipStreamHelper<string> = selfZip.zip.file("i18n.json")?.internalStream("string");
             const promise = new Promise(function (resolve, reject) {
                 stream
                     .on('data', function (dataChunk, metadata) {
@@ -150,10 +150,12 @@ export class ModI18N {
                             previousPercent = floorValue;
                             logger.log('Reading...... ' + floorValue);
                         }
-                            parser.write(dataChunk);
+                        parser.write(dataChunk);
                     })
-                    .on("error", function(err) {reject(err);})
-                    .on("end", function (){
+                    .on("error", function (err) {
+                        reject(err);
+                    })
+                    .on("end", function () {
                         try {
                             resolve(0);
                         } catch (e) {
