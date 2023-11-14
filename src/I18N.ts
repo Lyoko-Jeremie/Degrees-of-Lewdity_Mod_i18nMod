@@ -6,6 +6,7 @@ import type {SC2DataInfo, SC2DataInfoCache} from "../../../dist-BeforeSC2/SC2Dat
 
 import {JSONParser} from "@streamparser/json";
 import {TypeBOutputText, TypeBInputStoryScript, ModI18NTypeB} from "./TypeB";
+import {JSZipStreamHelper} from "jszip";
 
 export class ModI18N {
     modUtils: ModUtils = window.modUtils;
@@ -135,10 +136,33 @@ export class ModI18N {
                     parent.length = 0;
                 }
             };
-            const zipStream = selfZip.zip.file('i18n.json')?.async("string").then((content: string) => {
-                parser.write(content);
+
+            //internalStream 在ts注解里面不存在，但是实际上是有这个方法的
+            const logger = this.logger;
+            var previousPercent : Number = 0;
+            // @ts-ignore
+            const stream : JSZipStreamHelper<string> = selfZip.zip.file("i18n.json")?.internalStream("string");
+            const promise = new Promise(function (resolve, reject) {
+                stream
+                    .on('data', function (dataChunk, metadata) {
+                        var floorValue = Math.floor(metadata.percent);
+                        if (previousPercent != floorValue) {
+                            previousPercent = floorValue;
+                            logger.log('Reading...... ' + floorValue);
+                        }
+                            parser.write(dataChunk);
+                    })
+                    .on("error", function(err) {reject(err);})
+                    .on("end", function (){
+                        try {
+                            resolve(0);
+                        } catch (e) {
+                            reject(e);
+                        }
+                    })
+                    .resume();
             });
-            await zipStream;
+            await promise;
             //.pipe(JSONStream.parse(['typeB', '']))
 
             this.typeB = new ModI18NTypeB(resultB, resultBInput);
