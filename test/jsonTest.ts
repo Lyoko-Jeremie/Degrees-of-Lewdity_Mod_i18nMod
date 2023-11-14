@@ -4,7 +4,7 @@
 /// <reference path="../src/winDef.d.ts" />
 /// <reference path="../dist/typeB.d.ts" />
 
-import JSZip from 'jszip';
+import JSZip, {JSZipStreamHelper} from 'jszip';
 import fs from 'fs';
 import path from 'path';
 import {promisify} from 'util';
@@ -15,6 +15,7 @@ const { pipeline } = require('stream');
 
 
 import {JSONParser} from "@streamparser/json";
+import {TypeBInputStoryScript, TypeBOutputText } from '../dist/typeB';
 
 const lodash = _;
 function checkItem(t: any): t is TypeBInputStoryScript {
@@ -31,14 +32,6 @@ function checkItem(t: any): t is TypeBInputStoryScript {
     if (t.css || t.js) {
         c = c && lodash.isString(t.fileName);
     }
-    // console.log('checkItem', [c, [
-    //     lodash.isString(lodash.get(t, 'f')),
-    //     lodash.isString(lodash.get(t, 't')),
-    //     lodash.isNumber(lodash.get(t, 'pos')),
-    //     t.passageName ? lodash.isString(t.passageName) : true,
-    //     lodash.has(t, 'pN') ? lodash.isString(lodash.get(t, 'pN')) : true,
-    //     t.css || t.js ? lodash.isString(t.fileName) : true,
-    // ]]);
     return c;
 }
 
@@ -152,9 +145,9 @@ function checkAndProcessData(T: any): [TypeBOutputText[], TypeBInputStoryScript[
         }
         if (parent !== undefined) {
             //console.log(parent.length);
-            //const used = process.memoryUsage().heapUsed / 1024 / 1024;
-            //if (used > maxusage)
-            //    maxusage = used;
+            const used = process.memoryUsage().heapUsed / 1024 / 1024;
+            if (used > maxusage)
+                maxusage = used;
             parent.length = 0;
         }
     };
@@ -173,30 +166,39 @@ function checkAndProcessData(T: any): [TypeBOutputText[], TypeBInputStoryScript[
             console.log(`The script uses before read  ${Math.round(maxusage * 100) / 100} MB`);
         }
 
-        if (false)
+        if (true)
         {
             //这个代码段测试流式情况下的峰值内存占用
             //流式的情况下，内存占用为 53.31MB，远小于原本的大小
-            const readStream = fs.createReadStream(jsonPath, {encoding: 'utf-8'});
-
-            readStream.on('data', (chunk) => {
-                // 处理每一个数据块
-                parser.write(chunk);
-            });
-            // 创建一个“空操作”的可写流
-            const noopWritable = new Writable({
-                write(chunk: any, encoding: any, callback: () => void) {
-                    // 这里不做任何操作，只是调用回调函数
-                    callback();
-                }
-            });
-            const pipelineAsync = promisify(pipeline);
-            await pipelineAsync(readStream, noopWritable);
+            var zip : JSZip;
             {
-                const used = process.memoryUsage().heapUsed / 1024 / 1024;
-                if (used > maxusage)
-                    maxusage = used;
+                const jsonF = await promisify(fs.readFile)("ModI18N.mod.zip");
+                zip = await JSZip.loadAsync(jsonF);
             }
+            if (zip === undefined) return;
+
+            //const readStream = fs.createReadStream(jsonPath, {encoding: 'utf-8'});
+
+            // @ts-ignore
+            var stream : JSZipStreamHelper<string> = zip.file("i18n.json")?.internalStream("string");
+            var promise = new Promise(function (resolve, reject) {
+                stream
+                    .on('data', function (dataChunk, metadata) {
+                        parser.write(dataChunk);
+                    })
+                    .on("error", function(err) {reject(err);})
+                    .on("end", function (){
+                        try {
+                            resolve(0);
+                        } catch (e) {
+                            reject(e);
+                        }
+                    })
+                    .resume();
+            });
+            await promise;
+            //Memory Usage: The script uses max  68.26 MB
+            //await stream;
             console.info('Size:' + resultB.length + ' ' + resultBInput.length);
         }
         else {
