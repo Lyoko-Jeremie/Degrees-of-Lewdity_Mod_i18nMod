@@ -25,26 +25,6 @@
   ],
   "addonPlugin": [
     {
-      "modName": "TweeReplacer",
-      "addonName": "TweeReplacerAddon",
-      "modVersion": "1.0.0",
-      "params": [
-      ]
-    },
-    {
-      "modName": "ReplacePatcher",
-      "addonName": "ReplacePatcherAddon",
-      "modVersion": "1.0.0",
-      "params": {
-        "js": [
-        ],
-        "css": [
-        ],
-        "twee": [
-        ]
-      }
-    },
-    {
       "modName": "ModLoader DoL ImageLoaderHook",
       "addonName": "ImageLoaderAddon",
       "modVersion": "^2.3.0",
@@ -60,10 +40,6 @@
     {
       "modName": "GameVersion",
       "version": "=0.4.2.7"
-    },
-    {
-      "modName": "TweeReplacer",
-      "version": "^1.0.0"
     },
     {
       "modName": "ModLoader DoL ImageLoaderHook",
