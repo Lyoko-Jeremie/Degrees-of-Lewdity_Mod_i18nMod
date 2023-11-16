@@ -10,6 +10,7 @@
     "dist/i18nLoad.js"
   ],
   "scriptFileList_preload": [
+    "dist/preload/preload.js"
   ],
   "scriptFileList": [
   ],

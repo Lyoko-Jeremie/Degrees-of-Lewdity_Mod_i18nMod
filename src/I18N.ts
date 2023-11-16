@@ -76,6 +76,8 @@ export class ModI18N {
 
         const selfZip: ModZipReader | undefined = this.modSC2DataManager.getModLoader().getModZip('ModI18N');
         if (selfZip) {
+            // console.log('[i18n] selfZip.modInfo', selfZip.modInfo);
+            // console.log('[i18n] StartConfig', StartConfig);
             if (selfZip.modInfo && selfZip.modInfo.version) {
                 StartConfig.version = `${StartConfig.version}-(chs-${selfZip.modInfo.version})`;
             }

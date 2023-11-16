@@ -2,12 +2,11 @@
 
     // window.modI18N.patchVersionString();
 
-    // @ts-ignore
-    // window.jQuery(document).one(":passageinit", () => {
-    //     console.log('i18n patchVersionString');
-    //     window.modI18N.patchVersionString();
-    // });
-    //
+    window.jQuery(document).one(":passageinit", () => {
+        console.log('i18n patchVersionString');
+        window.modI18N.patchVersionString();
+    });
+
     // const styleNode = document.querySelector<HTMLStyleElement>('#style-module-base');
     // if (!styleNode) {
     //     console.error('cannot find #style-module-base');
