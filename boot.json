@@ -30,6 +30,31 @@
       "modVersion": "^2.3.0",
       "params": [
       ]
+    },
+    {
+      "modName": "ModuleCssReplacer",
+      "addonName": "ModuleCssReplacerAddon",
+      "modVersion": "^1.0.0",
+      "params": [
+        {
+          "cssName": "base",
+          "findString": "max-height: 2.4em;",
+          "replace": "max-height: 7em;",
+          "debug": true
+        },
+        {
+          "cssName": "base",
+          "findString": "content: \" months\";",
+          "replace": "content: \" 月数\";",
+          "debug": true
+        },
+        {
+          "cssName": "base",
+          "findString": "content: \" weeks\";",
+          "replace": "content: \" 周数\";",
+          "debug": true
+        }
+      ]
     }
   ],
   "dependenceInfo": [
@@ -44,6 +69,10 @@
     {
       "modName": "ModLoader DoL ImageLoaderHook",
       "version": "^2.3.0"
+    },
+    {
+      "modName": "ModuleCssReplacer",
+      "version": "^1.0.0"
     }
   ]
 }
