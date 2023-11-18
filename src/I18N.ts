@@ -8,6 +8,10 @@ import {JSONParser} from "@streamparser/json";
 import {TypeBOutputText, TypeBInputStoryScript, ModI18NTypeB} from "./TypeB";
 import {JSZipStreamHelper} from "jszip";
 
+export function sleep(ms: number = 0) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export class ModI18N {
     modUtils: ModUtils = window.modUtils;
     modSC2DataManager: SC2DataManager = window.modSC2DataManager;
@@ -171,15 +175,27 @@ export class ModI18N {
             await promise;
             //.pipe(JSONStream.parse(['typeB', '']))
 
+            logger.log('[i18n] parseing ... ');
+            await sleep(10);
+
             this.typeB = new ModI18NTypeB(resultB, resultBInput);
 
-            this.startReplace();
+            logger.log('[i18n] startReplace... ');
+            await sleep(10);
+
+            await this.startReplace();
+
+            logger.log('[i18n] replace end.');
+            await sleep(10);
 
             this.modSC2DataManager.getLanguageManager().mainLanguage = 'zh';
         }
+
+        this.logger.log('[i18n] all complete.');
+        await sleep(10);
     }
 
-    private startReplace() {
+    private async startReplace() {
         if (this.typeB === undefined) return;
         // start replace
         const sc2DataCache: SC2DataInfoCache = this.modSC2DataManager.getSC2DataInfoAfterPatch();
@@ -187,16 +203,26 @@ export class ModI18N {
         const sc2Data: SC2DataInfo = sc2DataCache.cloneSC2DataInfo();
         // console.log('i18nJson sc2Data', sc2Data);
 
+        this.logger.log('[i18n] replace style ... ');
+        await sleep(10);
+
         for (const T of sc2Data.styleFileItems.items) {
             T.content = this.typeB.replaceCss(T.content, T.name);
         }
+        this.logger.log('[i18n] replace script ... ');
+        await sleep(10);
         for (const T of sc2Data.scriptFileItems.items) {
             T.content = this.typeB.replaceJs(T.content, T.name);
         }
 
+        this.logger.log('[i18n] replace passage ... ');
+        await sleep(10);
         for (const pd of sc2Data.passageDataItems.items) {
             pd.content = this.typeB.replaceInputStoryScript(pd.content, pd.name);
         }
+
+        this.logger.log('[i18n] rebuilding ... ');
+        await sleep(10);
 
         console.log('sc2DataCache', sc2DataCache);
         console.log('sc2Data', sc2Data);
