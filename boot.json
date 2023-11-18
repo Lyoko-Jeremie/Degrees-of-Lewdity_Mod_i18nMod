@@ -40,19 +40,19 @@
           "cssName": "base",
           "findString": "max-height: 2.4em;",
           "replace": "max-height: 7em;",
-          "debug": true
+          "debug": false
         },
         {
           "cssName": "base",
           "findString": "content: \" months\";",
           "replace": "content: \" 月数\";",
-          "debug": true
+          "debug": false
         },
         {
           "cssName": "base",
           "findString": "content: \" weeks\";",
           "replace": "content: \" 周数\";",
-          "debug": true
+          "debug": false
         }
       ]
     }
