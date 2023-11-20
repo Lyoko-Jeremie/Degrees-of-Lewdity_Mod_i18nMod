@@ -1,7 +1,8 @@
 {
   "name": "ModI18N",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "styleFileList": [
+    "css-base-i18n-fix.css"
   ],
   "scriptFileList_earlyload": [
     "dist/earlyload/earlyload.js"
@@ -31,31 +32,6 @@
       "params": [
       ]
     },
-    {
-      "modName": "ModuleCssReplacer",
-      "addonName": "ModuleCssReplacerAddon",
-      "modVersion": "^1.0.0",
-      "params": [
-        {
-          "cssName": "base",
-          "findString": "max-height: 2.4em;",
-          "replace": "max-height: 7em;",
-          "debug": false
-        },
-        {
-          "cssName": "base",
-          "findString": "content: \" months\";",
-          "replace": "content: \" 月数\";",
-          "debug": false
-        },
-        {
-          "cssName": "base",
-          "findString": "content: \" weeks\";",
-          "replace": "content: \" 周数\";",
-          "debug": false
-        }
-      ]
-    }
   ],
   "dependenceInfo": [
     {
@@ -69,10 +45,6 @@
     {
       "modName": "ModLoader DoL ImageLoaderHook",
       "version": "^2.3.0"
-    },
-    {
-      "modName": "ModuleCssReplacer",
-      "version": "^1.0.0"
     }
   ]
 }

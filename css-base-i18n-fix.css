@@ -1,0 +1,14 @@
+
+#numberslider-value-humanpregnancymonths::after {
+    content: " 月数" !important;
+}
+
+#numberslider-value-wolfpregnancyweeks::after {
+    content: " 周数" !important;
+}
+
+@media (min-width: 40rem) {
+    #savesListContainer .savesListRow {
+        max-height: 7em !important;
+    }
+}
