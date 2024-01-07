@@ -1,7 +1,7 @@
 import type {SC2DataManager} from '../../../dist-BeforeSC2/SC2DataManager';
 import type {ModUtils} from '../../../dist-BeforeSC2/Utils';
 import type {LogWrapper} from "../../../dist-BeforeSC2/ModLoadController";
-import {ModZipReader} from "../../../dist-BeforeSC2/ModZipReader";
+import type {ModZipReader} from "../../../dist-BeforeSC2/ModZipReader";
 import type {SC2DataInfo, SC2DataInfoCache} from "../../../dist-BeforeSC2/SC2DataInfoCache";
 
 import {JSONParser} from "@streamparser/json";
@@ -197,7 +197,6 @@ export class ModI18N {
         }
 
         this.logger.log('[i18n] all complete.');
-
         await sleep(10);
     }
 
