@@ -1,12 +1,12 @@
 import type {SC2DataManager} from '../../../dist-BeforeSC2/SC2DataManager';
 import type {ModUtils} from '../../../dist-BeforeSC2/Utils';
 import type {LogWrapper} from "../../../dist-BeforeSC2/ModLoadController";
-import type {ModZipReader} from "../../../dist-BeforeSC2/ModZipReader";
+import {ModZipReader} from "../../../dist-BeforeSC2/ModZipReader";
 import type {SC2DataInfo, SC2DataInfoCache} from "../../../dist-BeforeSC2/SC2DataInfoCache";
 
 import {JSONParser} from "@streamparser/json";
 import {TypeBOutputText, TypeBInputStoryScript, ModI18NTypeB} from "./TypeB";
-import {JSZipStreamHelper} from "jszip";
+import JSZip, {JSZipStreamHelper} from "jszip";
 
 export function sleep(ms: number = 0) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -189,9 +189,19 @@ export class ModI18N {
             await sleep(10);
 
             this.modSC2DataManager.getLanguageManager().mainLanguage = 'zh';
+
+            let modInfo = this.modSC2DataManager.getModLoader().getModByNameOne('ModI18N');
+
+            //去除zip的引用，因为预期不再会有Mod访问它。
+            //这样之后会将这个Zip的空间释放(约 8 M)
+            if (modInfo) {
+                // @ts-ignore
+                selfZip._zip = new JSZip();
+            }
         }
 
         this.logger.log('[i18n] all complete.');
+
         await sleep(10);
     }
 
