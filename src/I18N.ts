@@ -192,8 +192,7 @@ export class ModI18N {
 
             //去除zip的引用，因为预期不再会有Mod访问它。
             //这样之后会将这个Zip的空间释放(约 8 M)
-            // @ts-ignore
-            selfZip._zip = new JSZip();
+            selfZip.gcReleaseZip();
         }
 
         this.logger.log('[i18n] all complete.');
