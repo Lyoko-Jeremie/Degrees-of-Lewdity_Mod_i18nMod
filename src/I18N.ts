@@ -6,7 +6,7 @@ import type {SC2DataInfo, SC2DataInfoCache} from "../../../dist-BeforeSC2/SC2Dat
 
 import {JSONParser} from "@streamparser/json";
 import {TypeBOutputText, TypeBInputStoryScript, ModI18NTypeB} from "./TypeB";
-import {JSZipStreamHelper} from "jszip";
+import JSZip, {JSZipStreamHelper} from "jszip";
 
 export function sleep(ms: number = 0) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -189,6 +189,10 @@ export class ModI18N {
             await sleep(10);
 
             this.modSC2DataManager.getLanguageManager().mainLanguage = 'zh';
+
+            //去除zip的引用，因为预期不再会有Mod访问它。
+            //这样之后会将这个Zip的空间释放(约 8 M)
+            selfZip.gcReleaseZip();
         }
 
         this.logger.log('[i18n] all complete.');
