@@ -83,7 +83,8 @@ export class ModI18N {
             // console.log('[i18n] selfZip.modInfo', selfZip.modInfo);
             // console.log('[i18n] StartConfig', StartConfig);
             if (selfZip.modInfo && selfZip.modInfo.version) {
-                StartConfig.version = `${StartConfig.version}-(chs-${selfZip.modInfo.version})`;
+                // StartConfig.version = `${StartConfig.version}-(chs-${selfZip.modInfo.version})`;
+                StartConfig.versionName = `chs-${selfZip.modInfo.version}`;
             }
         }
     }
