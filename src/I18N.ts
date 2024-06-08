@@ -192,7 +192,8 @@ export class ModI18N {
 
             //去除zip的引用，因为预期不再会有Mod访问它。
             //这样之后会将这个Zip的空间释放(约 8 M)
-            selfZip.gcReleaseZip();
+            // selfZip.gcReleaseZip();
+            // TODO banner 仍然需要访问zip，所以不能释放.
         }
 
         this.logger.log('[i18n] all complete.');
