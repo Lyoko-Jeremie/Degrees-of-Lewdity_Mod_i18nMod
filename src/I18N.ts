@@ -83,7 +83,8 @@ export class ModI18N {
             // console.log('[i18n] selfZip.modInfo', selfZip.modInfo);
             // console.log('[i18n] StartConfig', StartConfig);
             if (selfZip.modInfo && selfZip.modInfo.version) {
-                StartConfig.version = `${StartConfig.version}-(chs-${selfZip.modInfo.version})`;
+                // StartConfig.version = `${StartConfig.version}-(chs-${selfZip.modInfo.version})`;
+                StartConfig.versionName = `${StartConfig.versionName}-(chs-${selfZip.modInfo.version})`;
             }
         }
     }
@@ -192,8 +193,8 @@ export class ModI18N {
 
             //去除zip的引用，因为预期不再会有Mod访问它。
             //这样之后会将这个Zip的空间释放(约 8 M)
-            // selfZip.gcReleaseZip();
             // TODO banner 仍然需要访问zip，所以不能释放.
+            // selfZip.gcReleaseZip();
         }
 
         this.logger.log('[i18n] all complete.');
