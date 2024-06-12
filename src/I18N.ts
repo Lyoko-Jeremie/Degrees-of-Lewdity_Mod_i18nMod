@@ -191,14 +191,17 @@ export class ModI18N {
 
             this.modSC2DataManager.getLanguageManager().mainLanguage = 'zh';
 
+            logger.log('[i18n] cacheing image');
             for (const img of selfZip.modInfo!.imgs) {
                 // force load banner and other image , to avoid read error after release zip file
                 await img.getter.forceCache();
             }
+            logger.log('[i18n] cache image end.');
 
             //去除zip的引用，因为预期不再会有Mod访问它。
             //这样之后会将这个Zip的空间释放(约 8 M)
             selfZip.gcReleaseZip();
+            logger.log('[i18n] gc end.');
         }
 
         this.logger.log('[i18n] all complete.');

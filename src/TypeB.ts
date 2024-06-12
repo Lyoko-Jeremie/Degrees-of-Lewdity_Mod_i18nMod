@@ -206,14 +206,12 @@ class ModI18NTypeB_PassageMatcher {
             let s = passageContent;
             let textArray: Array<string> = [];
             let laxtIndex = 0;
-            pp.sort(function (a, b) {
-                return a.pos - b.pos
-            })
+            pp.sort((a, b) => a.pos - b.pos);
             // console.log('ModI18NTypeB_PassageMatcher replacePassageContent passageName:', passageName);
             // console.log('ModI18NTypeB_PassageMatcher replacePassageContent before:', [s]);
             for (const v of pp) {
 
-                let d = ModI18NTypeB_PassageMatcher.tryReplaceStringFuzzyWithHintNew(textArray, s, v, passageName, laxtIndex);
+                let d = ModI18NTypeB_PassageMatcher.tryReplaceStringFuzzyWithHintIndexComp(textArray, s, v, passageName, laxtIndex);
                 textArray = d[0];
                 laxtIndex = d[1];
 
@@ -245,7 +243,23 @@ class ModI18NTypeB_PassageMatcher {
         return 0;  // 如果两个字符串相等，返回 0
     }
 
-    static tryReplaceStringFuzzyWithHintNew(textArray: Array<string>, s: string, v: {
+    static isSubstringMatch(A: string, C: string, P: number): boolean {
+        // Check if P is within the bounds of A and if the substring from P can be at least as long as C
+        if (P < 0 || P >= A.length || P + C.length > A.length) {
+            return false;
+        }
+
+        // Compare each character one by one using charCodeAt
+        for (let i = 0; i < C.length; i++) {
+            if (A.charCodeAt(P + i) !== C.charCodeAt(i)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    static tryReplaceStringFuzzyWithHintIndex(textArray: Array<string>, s: string, v: {
         from: string,
         to: string,
         pos: number
@@ -280,13 +294,61 @@ class ModI18NTypeB_PassageMatcher {
                     textArray.push(s.substring(lastIndex, pStart), v.to)
                     lastIndex = pStart + v.from.length;
                 } else {
-                    console.error('tryReplaceStringFuzzyWithHint cannot find: ',
+                    console.error('tryReplaceStringFuzzyWithHintIndex cannot find: ',
                         [v.from], ' in ', [passageNameOrFileName], ' at ', [v.pos], ' in ', [s.substring(v.pos - 10, v.pos + v.from.length + 10)]);
                 }
                 re = undefined;
             } catch (e) {
                 console.error(e);
-                console.error('tryReplaceStringFuzzyWithHint cannot find with error: ',
+                console.error('tryReplaceStringFuzzyWithHintIndex cannot find with error: ',
+                    [v.from], ' in ', [passageNameOrFileName], ' at ', [v.pos], ' in ', [s.substring(v.pos - 10, v.pos + v.from.length + 10)]);
+            }
+        }
+        return {0: textArray, 1: lastIndex};
+    }
+
+    static tryReplaceStringFuzzyWithHintIndexComp(textArray: Array<string>, s: string, v: {
+        from: string,
+        to: string,
+        pos: number
+    }, passageNameOrFileName: string, lastIndex: number) {
+        // first , we try to match and replace with const string in +-2 , this is the fastest way
+        if (ModI18NTypeB_PassageMatcher.isSubstringMatch(s, v.from, v.pos)) {
+            textArray.push(s.substring(lastIndex, v.pos), v.to);
+            lastIndex = v.pos + v.from.length + 1;
+        } else if (ModI18NTypeB_PassageMatcher.isSubstringMatch(s, v.from, v.pos - 1)) {
+            textArray.push(s.substring(lastIndex, v.pos - 1), v.to)
+            lastIndex = v.pos - 1 + v.from.length + 1;
+        } else if (ModI18NTypeB_PassageMatcher.isSubstringMatch(s, v.from, v.pos - 2)) {
+            textArray.push(s.substring(lastIndex, v.pos - 2), v.to)
+            lastIndex = v.pos - 2 + v.from.length + 1;
+        } else if (ModI18NTypeB_PassageMatcher.isSubstringMatch(s, v.from, v.pos + 1)) {
+            textArray.push(s.substring(lastIndex, v.pos + 1), v.to)
+            lastIndex = v.pos + 1 + v.from.length + 1;
+        } else if (ModI18NTypeB_PassageMatcher.isSubstringMatch(s, v.from, v.pos + 2)) {
+            textArray.push(s.substring(lastIndex, v.pos + 2), v.to)
+            lastIndex = v.pos + 2 + v.from.length + 1;
+        } else {
+            // otherwise , we try to match and replace with fuzzy match in [-10~+30]
+            try {
+                let re: RegExp | undefined = new RegExp(ModI18NTypeB_escapedPatternString(v.from), '');
+                // re.lastIndex = v.pos;
+                const startPos = Math.max(0, v.pos - 10);
+                const endPos = Math.min(s.length, v.pos + v.from.length + 30);
+                const mm = re.exec(s.substring(startPos, endPos));
+                if (mm) {
+                    const pStart = startPos + mm.index;
+                    const pEnd = pStart + v.from.length;
+                    textArray.push(s.substring(lastIndex, pStart), v.to)
+                    lastIndex = pStart + v.from.length;
+                } else {
+                    console.error('tryReplaceStringFuzzyWithHintIndexComp cannot find: ',
+                        [v.from], ' in ', [passageNameOrFileName], ' at ', [v.pos], ' in ', [s.substring(v.pos - 10, v.pos + v.from.length + 10)]);
+                }
+                re = undefined;
+            } catch (e) {
+                console.error(e);
+                console.error('tryReplaceStringFuzzyWithHintIndexComp cannot find with error: ',
                     [v.from], ' in ', [passageNameOrFileName], ' at ', [v.pos], ' in ', [s.substring(v.pos - 10, v.pos + v.from.length + 10)]);
             }
         }
