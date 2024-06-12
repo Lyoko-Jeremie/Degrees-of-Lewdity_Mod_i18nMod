@@ -18,7 +18,8 @@
   "tweeFileList": [
   ],
   "imgFileList": [
-    "img/misc/banner.png"
+    "img/misc/locations/banner/banner_text.png",
+    "img/misc/old/banner.png"
   ],
   "additionFile": [
     "README.md",
