@@ -204,15 +204,18 @@ class ModI18NTypeB_PassageMatcher {
         const pp = this.getByPassage(passageName);
         if (pp) {
             let s = passageContent;
-            let textArray:Array<string> = [];
+            let textArray: Array<string> = [];
             let laxtIndex = 0;
-            pp.sort(function(a,b) {return a.pos-b.pos})
+            pp.sort(function (a, b) {
+                return a.pos - b.pos
+            })
             // console.log('ModI18NTypeB_PassageMatcher replacePassageContent passageName:', passageName);
             // console.log('ModI18NTypeB_PassageMatcher replacePassageContent before:', [s]);
             for (const v of pp) {
 
-                let d = ModI18NTypeB_PassageMatcher.tryReplaceStringFuzzyWithHintNew(textArray,s, v, passageName,laxtIndex);
-                textArray = d[0];laxtIndex = d[1];
+                let d = ModI18NTypeB_PassageMatcher.tryReplaceStringFuzzyWithHintNew(textArray, s, v, passageName, laxtIndex);
+                textArray = d[0];
+                laxtIndex = d[1];
 
             }
             textArray.push(s.substring(laxtIndex));
@@ -242,23 +245,27 @@ class ModI18NTypeB_PassageMatcher {
         return 0;  // 如果两个字符串相等，返回 0
     }
 
-    static tryReplaceStringFuzzyWithHintNew(textArray: Array<string>, s:string,v: { from: string, to: string, pos: number }, passageNameOrFileName: string ,lastIndex:number) {
+    static tryReplaceStringFuzzyWithHintNew(textArray: Array<string>, s: string, v: {
+        from: string,
+        to: string,
+        pos: number
+    }, passageNameOrFileName: string, lastIndex: number) {
         // first , we try to match and replace with const string in +-2 , this is the fastest way
         if (ModI18NTypeB_PassageMatcher.strcmpOffset(s, v.from, v.pos) == 0) {
-            textArray.push(s.substring(lastIndex, v.pos),v.to);
-            lastIndex = v.pos+v.from.length+1;
+            textArray.push(s.substring(lastIndex, v.pos), v.to);
+            lastIndex = v.pos + v.from.length + 1;
         } else if (ModI18NTypeB_PassageMatcher.strcmpOffset(s, v.from, v.pos - 1) == 0) {
-            textArray.push(s.substring(lastIndex, v.pos - 1),v.to)
-            lastIndex = v.pos-1+v.from.length+1;
+            textArray.push(s.substring(lastIndex, v.pos - 1), v.to)
+            lastIndex = v.pos - 1 + v.from.length + 1;
         } else if (ModI18NTypeB_PassageMatcher.strcmpOffset(s, v.from, v.pos - 2) == 0) {
-            textArray.push(s.substring(lastIndex, v.pos - 2),v.to)
-            lastIndex = v.pos-2+v.from.length+1;
+            textArray.push(s.substring(lastIndex, v.pos - 2), v.to)
+            lastIndex = v.pos - 2 + v.from.length + 1;
         } else if (ModI18NTypeB_PassageMatcher.strcmpOffset(s, v.from, v.pos + 1) == 0) {
-            textArray.push(s.substring(lastIndex, v.pos + 1),v.to)
-            lastIndex = v.pos+1+v.from.length+1;
+            textArray.push(s.substring(lastIndex, v.pos + 1), v.to)
+            lastIndex = v.pos + 1 + v.from.length + 1;
         } else if (ModI18NTypeB_PassageMatcher.strcmpOffset(s, v.from, v.pos + 2) == 0) {
-            textArray.push(s.substring(lastIndex, v.pos + 2),v.to)
-            lastIndex = v.pos+2+v.from.length+1;
+            textArray.push(s.substring(lastIndex, v.pos + 2), v.to)
+            lastIndex = v.pos + 2 + v.from.length + 1;
         } else {
             // otherwise , we try to match and replace with fuzzy match in [-10~+30]
             try {
@@ -270,8 +277,8 @@ class ModI18NTypeB_PassageMatcher {
                 if (mm) {
                     const pStart = startPos + mm.index;
                     const pEnd = pStart + v.from.length;
-                    textArray.push(s.substring(lastIndex, pStart),v.to)
-                    lastIndex = pStart+v.from.length;
+                    textArray.push(s.substring(lastIndex, pStart), v.to)
+                    lastIndex = pStart + v.from.length;
                 } else {
                     console.error('tryReplaceStringFuzzyWithHint cannot find: ',
                         [v.from], ' in ', [passageNameOrFileName], ' at ', [v.pos], ' in ', [s.substring(v.pos - 10, v.pos + v.from.length + 10)]);
@@ -283,9 +290,14 @@ class ModI18NTypeB_PassageMatcher {
                     [v.from], ' in ', [passageNameOrFileName], ' at ', [v.pos], ' in ', [s.substring(v.pos - 10, v.pos + v.from.length + 10)]);
             }
         }
-        return {0:textArray,1:lastIndex};
+        return {0: textArray, 1: lastIndex};
     }
-    static tryReplaceStringFuzzyWithHint(s: string, v: { from: string, to: string, pos: number }, passageNameOrFileName: string) {
+
+    static tryReplaceStringFuzzyWithHint(s: string, v: {
+        from: string,
+        to: string,
+        pos: number
+    }, passageNameOrFileName: string) {
         // first , we try to match and replace with const string in +-2 , this is the fastest way
         if (ModI18NTypeB_PassageMatcher.strcmpOffset(s, v.from, v.pos) == 0) {
             s = s.substring(0, v.pos) + v.to + s.substring(v.pos + v.from.length);
