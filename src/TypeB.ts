@@ -266,19 +266,19 @@ class ModI18NTypeB_PassageMatcher {
     }, passageNameOrFileName: string, lastIndex: number) {
         // first , we try to match and replace with const string in +-2 , this is the fastest way
         if (ModI18NTypeB_PassageMatcher.strcmpOffset(s, v.from, v.pos) == 0) {
-            textArray.push(s.substring(lastIndex, v.pos), v.to);
+            textArray.push(s.substring(lastIndex, v.pos), v.to, "\n");
             lastIndex = v.pos + v.from.length + 1;
         } else if (ModI18NTypeB_PassageMatcher.strcmpOffset(s, v.from, v.pos - 1) == 0) {
-            textArray.push(s.substring(lastIndex, v.pos - 1), v.to)
+            textArray.push(s.substring(lastIndex, v.pos - 1), v.to, "\n")
             lastIndex = v.pos - 1 + v.from.length + 1;
         } else if (ModI18NTypeB_PassageMatcher.strcmpOffset(s, v.from, v.pos - 2) == 0) {
-            textArray.push(s.substring(lastIndex, v.pos - 2), v.to)
+            textArray.push(s.substring(lastIndex, v.pos - 2), v.to, "\n")
             lastIndex = v.pos - 2 + v.from.length + 1;
         } else if (ModI18NTypeB_PassageMatcher.strcmpOffset(s, v.from, v.pos + 1) == 0) {
-            textArray.push(s.substring(lastIndex, v.pos + 1), v.to)
+            textArray.push(s.substring(lastIndex, v.pos + 1), v.to, "\n")
             lastIndex = v.pos + 1 + v.from.length + 1;
         } else if (ModI18NTypeB_PassageMatcher.strcmpOffset(s, v.from, v.pos + 2) == 0) {
-            textArray.push(s.substring(lastIndex, v.pos + 2), v.to)
+            textArray.push(s.substring(lastIndex, v.pos + 2), v.to, "\n")
             lastIndex = v.pos + 2 + v.from.length + 1;
         } else {
             // otherwise , we try to match and replace with fuzzy match in [-10~+30]
@@ -291,7 +291,7 @@ class ModI18NTypeB_PassageMatcher {
                 if (mm) {
                     const pStart = startPos + mm.index;
                     const pEnd = pStart + v.from.length;
-                    textArray.push(s.substring(lastIndex, pStart), v.to)
+                    textArray.push(s.substring(lastIndex, pStart), v.to, "\n")
                     lastIndex = pStart + v.from.length;
                 } else {
                     console.error('tryReplaceStringFuzzyWithHintIndex cannot find: ',
@@ -314,19 +314,19 @@ class ModI18NTypeB_PassageMatcher {
     }, passageNameOrFileName: string, lastIndex: number) {
         // first , we try to match and replace with const string in +-2 , this is the fastest way
         if (ModI18NTypeB_PassageMatcher.isSubstringMatch(s, v.from, v.pos)) {
-            textArray.push(s.substring(lastIndex, v.pos), v.to);
+            textArray.push(s.substring(lastIndex, v.pos), v.to, "\n");
             lastIndex = v.pos + v.from.length + 1;
         } else if (ModI18NTypeB_PassageMatcher.isSubstringMatch(s, v.from, v.pos - 1)) {
-            textArray.push(s.substring(lastIndex, v.pos - 1), v.to)
+            textArray.push(s.substring(lastIndex, v.pos - 1), v.to, "\n")
             lastIndex = v.pos - 1 + v.from.length + 1;
         } else if (ModI18NTypeB_PassageMatcher.isSubstringMatch(s, v.from, v.pos - 2)) {
-            textArray.push(s.substring(lastIndex, v.pos - 2), v.to)
+            textArray.push(s.substring(lastIndex, v.pos - 2), v.to, "\n")
             lastIndex = v.pos - 2 + v.from.length + 1;
         } else if (ModI18NTypeB_PassageMatcher.isSubstringMatch(s, v.from, v.pos + 1)) {
-            textArray.push(s.substring(lastIndex, v.pos + 1), v.to)
+            textArray.push(s.substring(lastIndex, v.pos + 1), v.to, "\n")
             lastIndex = v.pos + 1 + v.from.length + 1;
         } else if (ModI18NTypeB_PassageMatcher.isSubstringMatch(s, v.from, v.pos + 2)) {
-            textArray.push(s.substring(lastIndex, v.pos + 2), v.to)
+            textArray.push(s.substring(lastIndex, v.pos + 2), v.to, "\n")
             lastIndex = v.pos + 2 + v.from.length + 1;
         } else {
             // otherwise , we try to match and replace with fuzzy match in [-10~+30]
@@ -339,7 +339,7 @@ class ModI18NTypeB_PassageMatcher {
                 if (mm) {
                     const pStart = startPos + mm.index;
                     const pEnd = pStart + v.from.length;
-                    textArray.push(s.substring(lastIndex, pStart), v.to)
+                    textArray.push(s.substring(lastIndex, pStart), v.to, "\n")
                     lastIndex = pStart + v.from.length;
                 } else {
                     console.error('tryReplaceStringFuzzyWithHintIndexComp cannot find: ',
