@@ -9,7 +9,6 @@ import {TypeBOutputText, TypeBInputStoryScript, ModI18NTypeB} from "./TypeB";
 import JSZip, {JSZipStreamHelper} from "jszip";
 // @ts-ignore
 import {openDB as idb_openDB, deleteDB as idb_deleteDB} from "idb";
-import { IdbKeyValRef } from '../../../dist-BeforeSC2/IdbKeyValRef';
 
 export function sleep(ms: number = 0) {
     return new Promise(resolve => setTimeout(resolve, ms));
