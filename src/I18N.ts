@@ -2,13 +2,14 @@ import type {SC2DataManager} from '../../../dist-BeforeSC2/SC2DataManager';
 import type {ModUtils} from '../../../dist-BeforeSC2/Utils';
 import type {LogWrapper} from "../../../dist-BeforeSC2/ModLoadController";
 import type {ModZipReader} from "../../../dist-BeforeSC2/ModZipReader";
+import type {IdbRef, IdbKeyValRef} from "../../../dist-BeforeSC2/IdbKeyValRef";
 import type {SC2DataInfo, SC2DataInfoCache} from "../../../dist-BeforeSC2/SC2DataInfoCache";
 
 import {JSONParser} from "@streamparser/json";
-import {TypeBOutputText, TypeBInputStoryScript, ModI18NTypeB} from "./TypeB";
+import {TypeBOutputText, TypeBInputStoryScript, ModI18NTypeB, TypeBI18NInputType} from "./TypeB";
 import JSZip, {JSZipStreamHelper} from "jszip";
-// @ts-ignore
-import {openDB as idb_openDB, deleteDB as idb_deleteDB} from "idb";
+import {assert, is} from 'tsafe';
+
 
 export function sleep(ms: number = 0) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -21,12 +22,17 @@ export class ModI18N {
     _ = window.modUtils.getLodash();
     logger: LogWrapper;
 
+    idbRef: IdbRef;
+    idbKeyValRef: IdbKeyValRef;
+
     constructor() {
         this.logger = this.modUtils.getLogger();
+        this.idbRef = this.modUtils.getIdbRef();
+        this.idbKeyValRef = this.modUtils.getIdbKeyValRef();
     }
 
 
-    checkItem(t: any): t is TypeBInputStoryScript {
+    checkItem(t: any): t is TypeBI18NInputType {
         let c = t
             && this._.isString(this._.get(t, 'f'))
             && this._.isString(this._.get(t, 't'))
@@ -95,16 +101,16 @@ export class ModI18N {
     async readZipStream() {
         this.logger.log('patching i18n mod...');
         const selfZip = this.modSC2DataManager.getModLoader().getModZip('ModI18N');
-    
+
         if (!selfZip) {
             this.logger.log('ModI18N zip not found');
             return;
         }
-    
+
         // 获取mod的hash用于版本校验
         const currentHash = selfZip.modZipReaderHash.hash;
         const cachedData = await this.I18NGetFromIDB(currentHash);
-            
+
         if (cachedData) {
             this.logger.log('Using cached i18n data');
             this.typeB = new ModI18NTypeB(cachedData.resultB, cachedData.resultBInput);
@@ -125,7 +131,7 @@ export class ModI18N {
         this.logger.log('Starting replace...');
         await sleep(10);
         await this.startReplace();
-        
+
         this.modSC2DataManager.getLanguageManager().mainLanguage = 'zh';
 
         this.logger.log('[i18n] cacheing image');
@@ -141,7 +147,7 @@ export class ModI18N {
         this.logger.log('I18n patch complete');
         await sleep(10);
     }
-    
+
     // 原始zip解析方法
     private async parseOriginalZip(selfZip: any) {
         const parser = new JSONParser({
@@ -149,39 +155,32 @@ export class ModI18N {
             keepStack: false,
             paths: ['$.typeB.TypeBOutputText.*', '$.typeB.TypeBInputStoryScript.*']
         });
-    
+
         let resultB: TypeBOutputText[] = [];
         let resultBInput: TypeBInputStoryScript[] = [];
-    
+
         var maxusage = 0;
-        // @ts-ignore
         parser.onValue = ({value, key, parent, stack}) => {
             if (stack.length < 2) return;
             if (stack[2].key === 'TypeBOutputText') {
                 if (this.checkItem(value)) {
                     resultB.push({
-                        // @ts-ignore
                         from: value.f,
-                        // @ts-ignore
                         to: value.t,
-                        // @ts-ignore
                         pos: value.pos,
                         fileName: value.fileName,
-                        js: value.js
+                        js: value.js,
                     });
                 }
             } else if (stack[2].key === 'TypeBInputStoryScript') {
                 if (this.checkItem(value)) {
+                    assert(!!value.pN, 'pN must exist if it is TypeBInputStoryScript.');
                     resultBInput.push({
-                        // @ts-ignore
                         from: value.f,
-                        // @ts-ignore
                         to: value.t,
-                        // @ts-ignore
                         pos: value.pos,
                         fileName: value.fileName,
-                        // @ts-ignore
-                        passageName: value.pN
+                        passageName: value.pN,
                     });
                 }
             }
@@ -197,11 +196,9 @@ export class ModI18N {
         //internalStream 在ts注解里面不存在，但是实际上是有这个方法的
         const logger = this.logger;
         var previousPercent: number = 0;
-        // @ts-ignore
         const stream: JSZipStreamHelper<string> = selfZip.zip.file("i18n.json")?.internalStream("string");
         const promise = new Promise(function (resolve, reject) {
             stream
-            // @ts-ignore
                 .on('data', function (dataChunk, metadata) {
                     var floorValue = Math.floor(metadata.percent);
                     if (previousPercent !== floorValue) {
@@ -212,7 +209,6 @@ export class ModI18N {
                     }
                     parser.write(dataChunk);
                 })
-                // @ts-ignore
                 .on("error", function (err) {
                     reject(err);
                 })
@@ -226,31 +222,30 @@ export class ModI18N {
                 .resume();
         });
         await promise;
-    
+
         return {resultB, resultBInput};
     }
-    
+
     // IndexedDB操作方法
     private async I18NGetFromIDB(hash: BigInt) {
         const hashKey = String(hash);
-        const db = await idb_openDB('i18n-cache', 1, {
-            // @ts-ignore
+        const db = await this.idbRef.idb_openDB('i18n-cache', 1, {
             upgrade(db) {
-                db.createObjectStore('translations', { keyPath: 'hash' });
+                db.createObjectStore('translations', {keyPath: 'hash'});
             },
         });
-    
+
         const cached = await db.get('translations', hashKey);
-        await db.close();
+        db.close();
         return cached;
     }
-    
+
     private async I18NSaveToIDB(data: any) {
-        const db = await idb_openDB('i18n-cache', 1);
+        const db = await this.idbRef.idb_openDB('i18n-cache', 1);
         await db.put('translations', data);
-        await db.close();
+        db.close();
     }
-    
+
 
     private async startReplace() {
         if (this.typeB === undefined) return;

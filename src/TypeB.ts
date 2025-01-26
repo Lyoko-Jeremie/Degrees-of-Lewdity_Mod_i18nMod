@@ -1,3 +1,17 @@
+export interface TypeBI18NInputType {
+    f: string;
+    t: string;
+    // pos in passage
+    pos: number;
+
+    passageName?: string;
+    pN?: string;
+
+    fileName?: string;
+    js?: boolean;
+    css?: boolean;
+}
+
 // original OutputText -> (dontTrim/Trim) -> match `from:string` -> replace use to string
 export interface TypeBOutputText {
     from: string;
