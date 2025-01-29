@@ -115,6 +115,7 @@ export class ModI18N {
             this.logger.log('Using cached i18n data');
             this.typeB = new ModI18NTypeB(cachedData.resultB, cachedData.resultBInput);
         } else {
+            await this.I18NCleanCache();
             // 缓存未命中,使用原始解析方法
             this.logger.log('Cache miss, parsing i18n data...');
             const {resultB, resultBInput} = await this.parseOriginalZip(selfZip);
@@ -243,6 +244,12 @@ export class ModI18N {
     private async I18NSaveToIDB(data: any) {
         const db = await this.idbRef.idb_openDB('i18n-cache', 1);
         await db.put('translations', data);
+        db.close();
+    }
+
+    private async I18NCleanCache() {
+        const db = await this.idbRef.idb_openDB('i18n-cache', 1);
+        await db.clear('translations');
         db.close();
     }
 
