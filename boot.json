@@ -43,7 +43,23 @@
       "params": {
         "dontCovertMe": true
       }
-    }
+    },
+    {
+      "modName": "ReplacePatcher",
+      "addonName": "ReplacePatcherAddon",
+      "modVersion": "^1.2.1",
+      "params": {
+          "js": [{
+              "from": "const icon = document.createElement(\"img\");",
+              "to": "const icon = new Image();",
+              "fileName": "30-canvasmodel-editor.js"
+          },{
+            "from": "button.append(icon);",
+              "to": "icon.style.width = 'auto';button.append(icon);",
+              "fileName": "30-canvasmodel-editor.js"
+          }]
+      }
+  }
   ],
   "dependenceInfo": [
     {
@@ -52,7 +68,11 @@
     },
     {
       "modName": "GameVersion",
-      "version": "=0.4.2.7"
+      "version": "=0.5.3.7"
+    },
+    {
+      "modName": "ReplacePatcher",
+      "version": "^1.2.1"
     },
     {
       "modName": "ModLoader DoL ImageLoaderHook",
