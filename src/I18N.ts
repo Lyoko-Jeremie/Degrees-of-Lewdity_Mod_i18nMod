@@ -1,7 +1,7 @@
 import type {SC2DataManager} from '../../../dist-BeforeSC2/SC2DataManager';
 import type {ModUtils} from '../../../dist-BeforeSC2/Utils';
 import type {LogWrapper} from "../../../dist-BeforeSC2/ModLoadController";
-import type {ModZipReader} from "../../../dist-BeforeSC2/ModZipReader";
+import {ModZipReader, ModZipReaderHash} from "../../../dist-BeforeSC2/ModZipReader";
 import type {IdbRef, IdbKeyValRef} from "../../../dist-BeforeSC2/IdbKeyValRef";
 import type {SC2DataInfo, SC2DataInfoCache} from "../../../dist-BeforeSC2/SC2DataInfoCache";
 
@@ -108,7 +108,7 @@ export class ModI18N {
         }
 
         // 获取mod的hash用于版本校验
-        const currentHash = selfZip.modZipReaderHash.hash;
+        const currentHash = selfZip.modZipReaderHash;
         const cachedData = await this.I18NGetFromIDB(currentHash);
 
         if (cachedData) {
@@ -121,7 +121,7 @@ export class ModI18N {
             const {resultB, resultBInput} = await this.parseOriginalZip(selfZip);
 
             await this.I18NSaveToIDB({
-                hash: String(currentHash),
+                hash: currentHash.toString(),
                 resultB,
                 resultBInput
             });
@@ -228,8 +228,8 @@ export class ModI18N {
     }
 
     // IndexedDB操作方法
-    private async I18NGetFromIDB(hash: BigInt) {
-        const hashKey = String(hash);
+    private async I18NGetFromIDB(hash: ModZipReaderHash) {
+        const hashKey = hash.toString();
         const db = await this.idbRef.idb_openDB('i18n-cache', 1, {
             upgrade(db) {
                 db.createObjectStore('translations', {keyPath: 'hash'});
