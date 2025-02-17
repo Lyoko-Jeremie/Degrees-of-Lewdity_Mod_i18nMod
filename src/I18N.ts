@@ -143,6 +143,8 @@ export class ModI18N {
 
         // 释放zip
         selfZip.gcReleaseZip();
+        this.typeB.destroy();
+        this.typeB = undefined;
         this.logger.log('GC complete');
 
         this.logger.log('I18n patch complete');
@@ -314,7 +316,7 @@ export class ModI18N {
                 }
                 this.typeB = new ModI18NTypeB(cc[0], cc[1]);
 
-                this.startReplace();
+                await this.startReplace();
 
                 this.modSC2DataManager.getLanguageManager().mainLanguage = 'zh';
             }

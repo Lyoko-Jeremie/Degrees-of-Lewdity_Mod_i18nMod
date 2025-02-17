@@ -175,6 +175,11 @@ class ModI18NTypeB_OutputTextMatcher {
         return text;
     }
 
+    destroy() {
+        this.m.clear();
+        this.mt = [];
+    }
+
 }
 
 class ModI18NTypeB_PassageMatcher {
@@ -435,6 +440,11 @@ class ModI18NTypeB_PassageMatcher {
         return s;
     }
 
+    destroy() {
+        this.passagebuffer.clear();
+        this.mt = [];
+    }
+
 }
 
 interface TypeBJsCssMatchInfo {
@@ -534,6 +544,13 @@ class ModI18NTypeB_JsCssMatcher {
         return content;
     }
 
+    destroy() {
+        this.cssBuffer.clear();
+        this.jsBuffer.clear();
+        this.OutputText = [];
+        this.InputStoryScript = [];
+    }
+
 }
 
 export class ModI18NTypeB {
@@ -554,7 +571,7 @@ export class ModI18NTypeB {
         // };
     }
 
-    public oCreateTextNode!: typeof document.createTextNode;
+    public oCreateTextNode?: typeof document.createTextNode;
 
     public outputTextMatchBuffer: ModI18NTypeB_OutputTextMatcher;
     public inputStoryMatchBuffer: ModI18NTypeB_PassageMatcher;
@@ -595,6 +612,15 @@ export class ModI18NTypeB {
 
     replaceCss(text: string, fileName: string): string {
         return this.jsCssMatcher.replaceCss(text, fileName);
+    }
+
+    destroy() {
+        this.outputTextMatchBuffer.destroy();
+        this.inputStoryMatchBuffer.destroy();
+        this.jsCssMatcher.destroy();
+        this.oCreateTextNode = undefined;
+        this.OutputText = [];
+        this.InputStoryScript = [];
     }
 
 }
