@@ -246,15 +246,17 @@ class ModI18NTypeB_PassageMatcher {
             let s = passageContent;
             let textArray: Array<string> = [];
             let laxtIndex = 0;
+            let currentOffset = 0;
             pp.sort((a, b) => a.pos - b.pos);
             // console.log('ModI18NTypeB_PassageMatcher replacePassageContent passageName:', passageName);
             // console.log('ModI18NTypeB_PassageMatcher replacePassageContent before:', [pp, s]);
             // console.log(s);
             for (const v of pp) {
 
-                let d = ModI18NTypeB_PassageMatcher.tryReplaceStringFuzzyWithHintIndexComp(textArray, s, v, passageName, laxtIndex);
+                let d = ModI18NTypeB_PassageMatcher.tryReplaceStringFuzzyWithHintIndexComp(textArray, s, v, passageName, laxtIndex, currentOffset);
                 textArray = d[0];
                 laxtIndex = d[1];
+                currentOffset += d[2];
 
             }
             textArray.push(s.substring(laxtIndex));
@@ -353,8 +355,12 @@ class ModI18NTypeB_PassageMatcher {
     static tryReplaceStringFuzzyWithHintIndexComp(textArray: Array<string>, s: string, v: {
         from: string,
         to: string,
-        pos: number
-    }, passageNameOrFileName: string, lastIndex: number) {
+        pos: number,
+    }, passageNameOrFileName: string, lastIndex: number,currentOffset: number) {
+        const expectedPos = v.pos + currentOffset; // 计算期望的匹配位置
+        let actualFoundPos = -1;
+        let deltaOffset = 0; // 本次替换导致的偏移量变化，默认为0
+
         // first , we try to match and replace with const string in +-2 , this is the fastest way
         if (ModI18NTypeB_PassageMatcher.isSubstringMatch(s, v.from, v.pos)) {
             textArray.push(s.substring(lastIndex, v.pos), v.to);
@@ -385,8 +391,17 @@ class ModI18NTypeB_PassageMatcher {
                     textArray.push(s.substring(lastIndex, pStart), v.to);
                     lastIndex = pStart + v.from.length;
                 } else {
+                    const searchStartIndex = lastIndex;
+                    const foundIndex = s.indexOf(v.from, searchStartIndex);
+                    if (foundIndex !== -1) {
+                        actualFoundPos = foundIndex;
+                        deltaOffset = actualFoundPos - expectedPos; // 计算实际找到的位置与期望位置的差值
+                        textArray.push(s.substring(lastIndex, actualFoundPos), v.to);
+                        lastIndex = actualFoundPos + v.from.length;
+                } else {
                     console.error('tryReplaceStringFuzzyWithHintIndexComp cannot find: ',
                         [v.from], ' in ', [passageNameOrFileName], ' at ', [v.pos], ' in ', [s.substring(v.pos - 10, v.pos + v.from.length + 10)]);
+                    }
                 }
                 re = undefined;
             } catch (e) {
@@ -395,7 +410,7 @@ class ModI18NTypeB_PassageMatcher {
                     [v.from], ' in ', [passageNameOrFileName], ' at ', [v.pos], ' in ', [s.substring(v.pos - 10, v.pos + v.from.length + 10)]);
             }
         }
-        return {0: textArray, 1: lastIndex};
+        return {0: textArray, 1: lastIndex, 2: deltaOffset};
     }
 
     static tryReplaceStringFuzzyWithHint(s: string, v: {
