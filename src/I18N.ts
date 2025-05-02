@@ -287,6 +287,11 @@ export class ModI18N {
 
         console.log('sc2DataCache', sc2DataCache);
         console.log('sc2Data', sc2Data);
+
+        sc2Data.styleFileItems.fillMap();
+        sc2Data.scriptFileItems.fillMap();
+        sc2Data.passageDataItems.fillMap();
+        
         this.modUtils.replaceFollowSC2DataInfo(sc2Data, sc2DataCache);
     }
 
