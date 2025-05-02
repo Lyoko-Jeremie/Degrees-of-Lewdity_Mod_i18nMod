@@ -266,14 +266,16 @@ export class ModI18N {
 
         this.logger.log('[i18n] replace style ... ');
         await sleep(10);
-
-        for (const T of sc2Data.styleFileItems.items) {
-            T.content = this.typeB.replaceCss(T.content, T.name);
+        for (const styleItem of sc2Data.styleFileItems.items) {
+          const name = sc2Data.scriptFileItems.getNoPathNameFromString(styleItem.name);
+          styleItem.content = this.typeB.replaceCss(styleItem.content, name);
         }
+        
         this.logger.log('[i18n] replace script ... ');
         await sleep(10);
-        for (const T of sc2Data.scriptFileItems.items) {
-            T.content = this.typeB.replaceJs(T.content, T.name);
+        for (const scriptItem of sc2Data.scriptFileItems.items) {
+          const name = sc2Data.scriptFileItems.getNoPathNameFromString(scriptItem.name);
+          scriptItem.content = this.typeB.replaceJs(scriptItem.content, name);
         }
 
         this.logger.log('[i18n] replace passage ... ');
