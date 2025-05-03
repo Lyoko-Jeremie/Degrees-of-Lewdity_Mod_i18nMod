@@ -280,8 +280,9 @@ export class ModI18N {
 
         this.logger.log('[i18n] replace passage ... ');
         await sleep(10);
-        for (const pd of sc2Data.passageDataItems.items) {
-            pd.content = this.typeB.replaceInputStoryScript(pd.content, pd.name);
+        for (const passageDataItem of sc2Data.passageDataItems.items) {
+          const name = sc2Data.scriptFileItems.getNoPathNameFromString(passageDataItem.name);
+          passageDataItem.content = this.typeB.replaceInputStoryScript(passageDataItem.content, name);
         }
 
         this.logger.log('[i18n] rebuilding ... ');
