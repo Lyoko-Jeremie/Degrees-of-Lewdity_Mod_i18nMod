@@ -1,6 +1,6 @@
 {
   "name": "ModI18N",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "styleFileList": [
     "css-base-i18n-fix.css"
   ],
@@ -48,7 +48,7 @@
   "dependenceInfo": [
     {
       "modName": "ModLoader",
-      "version": "^2.17.0"
+      "version": "^2.31.2"
     },
     {
       "modName": "GameVersion",
