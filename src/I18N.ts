@@ -270,7 +270,7 @@ export class ModI18N {
           const name = sc2Data.scriptFileItems.getNoPathNameFromString(styleItem.name);
           styleItem.content = this.typeB.replaceCss(styleItem.content, name);
         }
-        
+
         this.logger.log('[i18n] replace script ... ');
         await sleep(10);
         for (const scriptItem of sc2Data.scriptFileItems.items) {
@@ -280,9 +280,8 @@ export class ModI18N {
 
         this.logger.log('[i18n] replace passage ... ');
         await sleep(10);
-        for (const passageDataItem of sc2Data.passageDataItems.items) {
-          const name = sc2Data.scriptFileItems.getNoPathNameFromString(passageDataItem.name);
-          passageDataItem.content = this.typeB.replaceInputStoryScript(passageDataItem.content, name);
+        for (const pd of sc2Data.passageDataItems.items) {
+            pd.content = this.typeB.replaceInputStoryScript(pd.content, pd.name);
         }
 
         this.logger.log('[i18n] rebuilding ... ');
@@ -294,7 +293,7 @@ export class ModI18N {
         sc2Data.styleFileItems.fillMap();
         sc2Data.scriptFileItems.fillMap();
         sc2Data.passageDataItems.fillMap();
-        
+
         this.modUtils.replaceFollowSC2DataInfo(sc2Data, sc2DataCache);
     }
 
