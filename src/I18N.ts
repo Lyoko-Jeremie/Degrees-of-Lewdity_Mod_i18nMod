@@ -266,20 +266,23 @@ export class ModI18N {
 
         this.logger.log('[i18n] replace style ... ');
         await sleep(10);
-
-        for (const T of sc2Data.styleFileItems.items) {
-            T.content = this.typeB.replaceCss(T.content, T.name);
+        for (const styleItem of sc2Data.styleFileItems.items) {
+          const name = sc2Data.scriptFileItems.getNoPathNameFromString(styleItem.name);
+          styleItem.content = this.typeB.replaceCss(styleItem.content, name);
         }
+        
         this.logger.log('[i18n] replace script ... ');
         await sleep(10);
-        for (const T of sc2Data.scriptFileItems.items) {
-            T.content = this.typeB.replaceJs(T.content, T.name);
+        for (const scriptItem of sc2Data.scriptFileItems.items) {
+          const name = sc2Data.scriptFileItems.getNoPathNameFromString(scriptItem.name);
+          scriptItem.content = this.typeB.replaceJs(scriptItem.content, name);
         }
 
         this.logger.log('[i18n] replace passage ... ');
         await sleep(10);
-        for (const pd of sc2Data.passageDataItems.items) {
-            pd.content = this.typeB.replaceInputStoryScript(pd.content, pd.name);
+        for (const passageDataItem of sc2Data.passageDataItems.items) {
+          const name = sc2Data.scriptFileItems.getNoPathNameFromString(passageDataItem.name);
+          passageDataItem.content = this.typeB.replaceInputStoryScript(passageDataItem.content, name);
         }
 
         this.logger.log('[i18n] rebuilding ... ');
@@ -287,6 +290,11 @@ export class ModI18N {
 
         console.log('sc2DataCache', sc2DataCache);
         console.log('sc2Data', sc2Data);
+
+        sc2Data.styleFileItems.fillMap();
+        sc2Data.scriptFileItems.fillMap();
+        sc2Data.passageDataItems.fillMap();
+        
         this.modUtils.replaceFollowSC2DataInfo(sc2Data, sc2DataCache);
     }
 
