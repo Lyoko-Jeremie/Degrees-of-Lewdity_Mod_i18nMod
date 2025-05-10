@@ -1,6 +1,6 @@
 {
   "name": "ModI18N",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "styleFileList": [
     "css-base-i18n-fix.css"
   ],
@@ -8,6 +8,7 @@
     "dist/earlyload/earlyload.js"
   ],
   "scriptFileList_inject_early": [
+    "patch-formatList.js",
     "dist/i18nLoad.js"
   ],
   "scriptFileList_preload": [
