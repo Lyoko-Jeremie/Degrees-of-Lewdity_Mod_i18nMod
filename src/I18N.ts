@@ -135,7 +135,7 @@ export class ModI18N {
 
         this.modSC2DataManager.getLanguageManager().mainLanguage = 'zh';
 
-        this.logger.log('[i18n] cacheing image');
+        this.logger.log('[i18n] caching image');
         for (const img of selfZip.modInfo!.imgs) {
             // force load banner and other image , to avoid read error after release zip file
             await img.getter.forceCache();
