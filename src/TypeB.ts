@@ -559,12 +559,12 @@ export class ModI18NTypeB {
         public OutputText: TypeBOutputText[],
         public InputStoryScript: TypeBInputStoryScript[],
     ) {
-        this.outputTextMatchBuffer = new ModI18NTypeB_OutputTextMatcher(OutputText);
+        // this.outputTextMatchBuffer = new ModI18NTypeB_OutputTextMatcher(OutputText);
         this.inputStoryMatchBuffer = new ModI18NTypeB_PassageMatcher(InputStoryScript);
         this.jsCssMatcher = new ModI18NTypeB_JsCssMatcher(OutputText, InputStoryScript);
 
-        // monky patch
-        // console.log('TypeB constructor monky patch document.createTextNode');
+        // monkey patch
+        // console.log('TypeB constructor monkey patch document.createTextNode');
         // this.oCreateTextNode = document.createTextNode;
         // document.createTextNode = (text: string) => {
         //     return this.oCreateTextNode.call(document, this.replaceOutputText(text));
@@ -573,23 +573,23 @@ export class ModI18NTypeB {
 
     public oCreateTextNode?: typeof document.createTextNode;
 
-    public outputTextMatchBuffer: ModI18NTypeB_OutputTextMatcher;
+    // public outputTextMatchBuffer: ModI18NTypeB_OutputTextMatcher;
     public inputStoryMatchBuffer: ModI18NTypeB_PassageMatcher;
     public jsCssMatcher: ModI18NTypeB_JsCssMatcher;
 
-    replaceOutputText(text: string): string {
-        if (!text.trim()) {
-            // empty string
-            return text;
-        }
-        // console.log('replaceOutputText input text ==>>', [text], text);
-        try {
-            return this.outputTextMatchBuffer.tryReplace(text);
-        } catch (e) {
-            console.error(e);
-            return text;
-        }
-    }
+    // replaceOutputText(text: string): string {
+    //     if (!text.trim()) {
+    //         // empty string
+    //         return text;
+    //     }
+    //     // console.log('replaceOutputText input text ==>>', [text], text);
+    //     try {
+    //         return this.outputTextMatchBuffer.tryReplace(text);
+    //     } catch (e) {
+    //         console.error(e);
+    //         return text;
+    //     }
+    // }
 
     replaceInputStoryScript(text: string, passageName: string): string {
         if (!text.trim()) {
@@ -615,7 +615,7 @@ export class ModI18NTypeB {
     }
 
     destroy() {
-        this.outputTextMatchBuffer.destroy();
+        // this.outputTextMatchBuffer.destroy();
         this.inputStoryMatchBuffer.destroy();
         this.jsCssMatcher.destroy();
         this.oCreateTextNode = undefined;
