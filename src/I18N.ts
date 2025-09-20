@@ -1,14 +1,17 @@
 import type {SC2DataManager} from '../../../dist-BeforeSC2/SC2DataManager';
 import type {ModUtils} from '../../../dist-BeforeSC2/Utils';
 import type {LogWrapper} from "../../../dist-BeforeSC2/ModLoadController";
-import {ModZipReader, ModZipReaderHash} from "../../../dist-BeforeSC2/ModZipReader";
+import type {ModZipReader, ModZipReaderHash} from "../../../dist-BeforeSC2/ModZipReader";
 import type {IdbRef, IdbKeyValRef} from "../../../dist-BeforeSC2/IdbKeyValRef";
 import type {SC2DataInfo, SC2DataInfoCache} from "../../../dist-BeforeSC2/SC2DataInfoCache";
+import type {ModPackFileReaderJsZipAdaptor} from "../../../dist-BeforeSC2/ModPack/ModPackJsZipAdaptor";
+import type {ModPackFileReader} from "../../../dist-BeforeSC2/ModPack/ModPack";
 
 import {JSONParser} from "@streamparser/json";
 import {TypeBOutputText, TypeBInputStoryScript, ModI18NTypeB, TypeBI18NInputType} from "./TypeB";
 import JSZip, {JSZipStreamHelper} from "jszip";
 import {assert, is} from 'tsafe';
+import {GetPromiseWithResolvers} from "./GetPromiseWithResolvers";
 
 
 export function sleep(ms: number = 0) {
@@ -152,7 +155,7 @@ export class ModI18N {
     }
 
     // 原始zip解析方法
-    private async parseOriginalZip(selfZip: any) {
+    private async parseOriginalZip(selfZip: ModZipReader) {
         const parser = new JSONParser({
             stringBufferSize: 1024,
             keepStack: false,
@@ -198,33 +201,102 @@ export class ModI18N {
 
         //internalStream 在ts注解里面不存在，但是实际上是有这个方法的
         const logger = this.logger;
-        var previousPercent: number = 0;
-        const stream: JSZipStreamHelper<string> = selfZip.zip.file("i18n.json")?.internalStream("string");
-        const promise = new Promise(function (resolve, reject) {
-            stream
-                .on('data', function (dataChunk, metadata) {
-                    var floorValue = Math.floor(metadata.percent);
-                    if (previousPercent !== floorValue) {
-                        previousPercent = floorValue;
-                        if ((previousPercent % 10) === 0) {
-                            logger.log('[i18n] Loading...... ' + floorValue);
+        let previousPercent: number = 0;
+        if (selfZip.zip.is_JeremieModLoader_ModPack) {
+            // get the underlying ModPackFileReader API , to direct get file byte from ModPack in-memory buffer.
+            const fileDataRef = await (selfZip.zip as ModPackFileReaderJsZipAdaptor as ModPackFileReader).getFile('i18n.json');
+            if (!fileDataRef) {
+                console.error('i18n.json not found in ModI18N zip');
+                this.logger.error('i18n.json not found in ModI18N zip');
+                throw new Error('i18n.json not found in ModI18N zip');
+            }
+
+            // use TextDecoderStream to decode UInt8Array to string with stream.
+            // in some case , this will be a zero-copy operation.
+            // and, the Uint8Array be inplace reading when ModPack file not encrypt.
+            // so , we will get a very low memory usage reading way.
+            const ts = new TextDecoderStream();
+            const writer = ts.writable.getWriter();
+            const reader = ts.readable.getReader();
+
+            const readDefer = GetPromiseWithResolvers<void>();
+            const readThr = async () => {
+                try {
+                    while (true) {
+                        const {value, done} = await reader.read();
+                        if (done) break;
+                        parser.write(value);
+                    }
+                    readDefer.resolve();
+                } catch (e) {
+                    console.error('ModI18N readThr error', e);
+                    readDefer.reject(e);
+                }
+            };
+            const writeThr = async () => {
+                try {
+                    for (let i = 0; i < fileDataRef.length;) {
+                        await writer.ready;
+                        const start = i;
+                        const end = Math.min(i + 1024, fileDataRef.length);
+                        const chunk = fileDataRef.slice(start, end);
+                        await writer.write(chunk);
+                        i = end;
+
+                        const floorValue = Math.floor((i / fileDataRef.length) * 100);
+                        if (previousPercent !== floorValue) {
+                            previousPercent = floorValue;
+                            if ((previousPercent % 10) === 0) {
+                                logger.log('[i18n] Loading...... ' + floorValue);
+                            }
                         }
                     }
-                    parser.write(dataChunk);
-                })
-                .on("error", function (err) {
-                    reject(err);
-                })
-                .on("end", function () {
-                    try {
-                        resolve(0);
-                    } catch (e) {
-                        reject(e);
-                    }
-                })
-                .resume();
-        });
-        await promise;
+                    // must call again to ensure last chunk is flushed
+                    await writer.ready;
+                    await writer.close();
+                } catch (e) {
+                    console.error('ModI18N writeThr error', e);
+                    await writer.close();
+                }
+            };
+            readThr().catch(E => {
+                console.error('ModI18N readThr outer error', E);
+            });
+            writeThr().catch(E => {
+                console.error('ModI18N writeThr outer error', E);
+            });
+
+            await readDefer.promise;
+        } else {
+            // selfZip.zip.file("i18n.json")!.async('string');
+            // use the underlying stream method to avoid load all file to memory
+            const stream: JSZipStreamHelper<string> = (selfZip.zip as any).file("i18n.json")?.internalStream("string");
+            const promise = new Promise(function (resolve, reject) {
+                stream
+                    .on('data', function (dataChunk, metadata) {
+                        const floorValue = Math.floor(metadata.percent);
+                        if (previousPercent !== floorValue) {
+                            previousPercent = floorValue;
+                            if ((previousPercent % 10) === 0) {
+                                logger.log('[i18n] Loading...... ' + floorValue);
+                            }
+                        }
+                        parser.write(dataChunk);
+                    })
+                    .on("error", function (err) {
+                        reject(err);
+                    })
+                    .on("end", function () {
+                        try {
+                            resolve(0);
+                        } catch (e) {
+                            reject(e);
+                        }
+                    })
+                    .resume();
+            });
+            await promise;
+        }
 
         return {resultB, resultBInput};
     }
@@ -267,15 +339,15 @@ export class ModI18N {
         this.logger.log('[i18n] replace style ... ');
         await sleep(10);
         for (const styleItem of sc2Data.styleFileItems.items) {
-          const name = sc2Data.scriptFileItems.getNoPathNameFromString(styleItem.name);
-          styleItem.content = this.typeB.replaceCss(styleItem.content, name);
+            const name = sc2Data.scriptFileItems.getNoPathNameFromString(styleItem.name);
+            styleItem.content = this.typeB.replaceCss(styleItem.content, name);
         }
 
         this.logger.log('[i18n] replace script ... ');
         await sleep(10);
         for (const scriptItem of sc2Data.scriptFileItems.items) {
-          const name = sc2Data.scriptFileItems.getNoPathNameFromString(scriptItem.name);
-          scriptItem.content = this.typeB.replaceJs(scriptItem.content, name);
+            const name = sc2Data.scriptFileItems.getNoPathNameFromString(scriptItem.name);
+            scriptItem.content = this.typeB.replaceJs(scriptItem.content, name);
         }
 
         this.logger.log('[i18n] replace passage ... ');
