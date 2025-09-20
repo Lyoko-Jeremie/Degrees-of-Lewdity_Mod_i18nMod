@@ -1,6 +1,6 @@
 {
   "name": "ModI18N",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "styleFileList": [
     "css-base-i18n-fix.css"
   ],
@@ -53,7 +53,7 @@
     },
     {
       "modName": "GameVersion",
-      "version": "=0.5.3.7"
+      "version": "=0.5.5.8"
     },
     {
       "modName": "ModLoader DoL ImageLoaderHook",
