@@ -2,6 +2,34 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$/../.." vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../BeautySelectorAddon" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../CheckDoLCompressorDictionaries" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../CheckGameVersion" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../CheckGameVersionCot" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../ConflictChecker" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../Diff3WayMerge" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../DoLHookWidget" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../DoLLinkButtonFilter" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../DoLTimeWrapperAddon" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../HookMacroRng" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../I18nScriptList" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../I18nTweeList" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../I18nTweeReplacer" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../ImageLoaderHook" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../ImageLoaderHook2BeautySelectorAddon" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../ModLoaderGui" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../ModLoaderGui/src/GM_config_TS" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../ModSubUiAngularJs" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../ModdedClothesAddon" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../ModdedFeatsAddon" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../ModdedHairAddon" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../ModuleCssReplacer" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../ReplacePatch" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../SweetAlert2Mod" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../TweePrefixPostfixAddon" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../TweeReplacer" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../TweeReplacerLinker" vcs="Git" />
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../template" vcs="Git" />
   </component>
 </project>
