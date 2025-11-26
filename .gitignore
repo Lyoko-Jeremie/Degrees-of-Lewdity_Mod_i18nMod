@@ -10,6 +10,9 @@
 #!.yarn/cache
 #.pnp.*
 
+.idea/copilot*
+*.modpack
+
 node_modules
 dist
 #img
