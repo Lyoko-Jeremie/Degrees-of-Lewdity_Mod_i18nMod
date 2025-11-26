@@ -115,7 +115,7 @@ export interface TypeBInputStoryScript {
 class ModI18NTypeB_OutputTextMatcher {
 
     m: Map<string, TypeBOutputText>;
-    fastTest: RegExp;
+    fastTests: RegExp[];
 
     constructor(
         public mt: TypeBOutputText[],
@@ -126,22 +126,42 @@ class ModI18NTypeB_OutputTextMatcher {
                 return [ModI18NTypeB_normalizeSearchString(v.from.trim()), v];
             }),
         );
-        this.fastTest = new RegExp(Array.from(this.m.keys()).join("|"), 'g');
+        // this.fastTest = new RegExp(Array.from(this.m.keys()).join("|"), 'g');
+        this.fastTests = [];
+        const keys = Array.from(this.m.keys());
+        const CHUNK_SIZE = 300; // iOS 建议分块大小不超过 300-500
+        for (let i = 0; i < keys.length; i += CHUNK_SIZE) {
+            const chunk = keys.slice(i, i + CHUNK_SIZE);
+            if (chunk.length > 0) {
+                this.fastTests.push(new RegExp(chunk.join("|"), 'g'));
+            }
+        }
     }
 
     tryReplace(text: string) {
-        if (!text.trim()) {
+        if (!text || !text.trim()) {
             return text;
         }
 
         // come from GPT-4
-        if (this.fastTest.test(text)) {
+        // if (this.fastTest.test(text)) {
+        let matches: { index: number; value: string; }[] = [];
 
-            let matches = [];
+        for (const regex of this.fastTests) {
+            regex.lastIndex = 0;
             let match;
-            while ((match = this.fastTest.exec(text)) !== null) {
+            while ((match = regex.exec(text)) !== null) {
                 matches.push({index: match.index, value: match[0]});
             }
+        }
+
+        if (matches.length > 0) {
+
+            // let matches = [];
+            // let match;
+            // while ((match = this.fastTest.exec(text)) !== null) {
+            //     matches.push({index: match.index, value: match[0]});
+            // }
             // 按照在 strA 中的起始位置排序
             matches.sort((a, b) => a.index - b.index);
             // 用于记录哪些索引已经被替换过，以避免重叠替换
@@ -159,12 +179,22 @@ class ModI18NTypeB_OutputTextMatcher {
                 }
 
                 if (!overlap) {
-                    let before = s.substring(0, m.index);
-                    let after = s.substring(m.index + m.value.length);
-                    s = before + this.m.get(m.value)!.to + after;
+                    // let before = s.substring(0, m.index);
+                    // let after = s.substring(m.index + m.value.length);
+                    // s = before + this.m.get(m.value)!.to + after;
 
-                    for (let i = m.index; i < m.index + this.m.get(m.value)!.to.length; i++) {
-                        replacedIndices.add(i);
+                    // for (let i = m.index; i < m.index + this.m.get(m.value)!.to.length; i++) {
+                    //     replacedIndices.add(i);
+                    // }
+                    const replacementEntry = this.m.get(m.value);
+                    if (replacementEntry) {
+                        let before = s.substring(0, m.index);
+                        let after = s.substring(m.index + m.value.length);
+                        s = before + replacementEntry.to + after;
+
+                        for (let i = m.index; i < m.index + replacementEntry.to.length; i++) {
+                            replacedIndices.add(i);
+                        }
                     }
                 }
             }
@@ -246,15 +276,17 @@ class ModI18NTypeB_PassageMatcher {
             let s = passageContent;
             let textArray: Array<string> = [];
             let laxtIndex = 0;
+            let currentOffset = 0;
             pp.sort((a, b) => a.pos - b.pos);
             // console.log('ModI18NTypeB_PassageMatcher replacePassageContent passageName:', passageName);
             // console.log('ModI18NTypeB_PassageMatcher replacePassageContent before:', [pp, s]);
             // console.log(s);
             for (const v of pp) {
 
-                let d = ModI18NTypeB_PassageMatcher.tryReplaceStringFuzzyWithHintIndexComp(textArray, s, v, passageName, laxtIndex);
+                let d = ModI18NTypeB_PassageMatcher.tryReplaceStringFuzzyWithHintIndexComp(textArray, s, v, passageName, laxtIndex, currentOffset);
                 textArray = d[0];
                 laxtIndex = d[1];
+                currentOffset += d[2];
 
             }
             textArray.push(s.substring(laxtIndex));
@@ -353,8 +385,12 @@ class ModI18NTypeB_PassageMatcher {
     static tryReplaceStringFuzzyWithHintIndexComp(textArray: Array<string>, s: string, v: {
         from: string,
         to: string,
-        pos: number
-    }, passageNameOrFileName: string, lastIndex: number) {
+        pos: number,
+    }, passageNameOrFileName: string, lastIndex: number,currentOffset: number) {
+        const expectedPos = v.pos + currentOffset; // 计算期望的匹配位置
+        let actualFoundPos = -1;
+        let deltaOffset = 0; // 本次替换导致的偏移量变化，默认为0
+
         // first , we try to match and replace with const string in +-2 , this is the fastest way
         if (ModI18NTypeB_PassageMatcher.isSubstringMatch(s, v.from, v.pos)) {
             textArray.push(s.substring(lastIndex, v.pos), v.to);
@@ -385,8 +421,17 @@ class ModI18NTypeB_PassageMatcher {
                     textArray.push(s.substring(lastIndex, pStart), v.to);
                     lastIndex = pStart + v.from.length;
                 } else {
+                    const searchStartIndex = lastIndex;
+                    const foundIndex = s.indexOf(v.from, searchStartIndex);
+                    if (foundIndex !== -1) {
+                        actualFoundPos = foundIndex;
+                        deltaOffset = actualFoundPos - expectedPos; // 计算实际找到的位置与期望位置的差值
+                        textArray.push(s.substring(lastIndex, actualFoundPos), v.to);
+                        lastIndex = actualFoundPos + v.from.length;
+                } else {
                     console.error('tryReplaceStringFuzzyWithHintIndexComp cannot find: ',
                         [v.from], ' in ', [passageNameOrFileName], ' at ', [v.pos], ' in ', [s.substring(v.pos - 10, v.pos + v.from.length + 10)]);
+                    }
                 }
                 re = undefined;
             } catch (e) {
@@ -395,7 +440,7 @@ class ModI18NTypeB_PassageMatcher {
                     [v.from], ' in ', [passageNameOrFileName], ' at ', [v.pos], ' in ', [s.substring(v.pos - 10, v.pos + v.from.length + 10)]);
             }
         }
-        return {0: textArray, 1: lastIndex};
+        return {0: textArray, 1: lastIndex, 2: deltaOffset};
     }
 
     static tryReplaceStringFuzzyWithHint(s: string, v: {
