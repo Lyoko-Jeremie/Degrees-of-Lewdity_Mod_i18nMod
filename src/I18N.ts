@@ -8,6 +8,7 @@ import type {ModPackFileReaderJsZipAdaptor} from "../../../dist-BeforeSC2/ModPac
 import type {ModPackFileReader} from "../../../dist-BeforeSC2/ModPack/ModPack";
 
 import {JSONParser} from "@streamparser/json";
+import type { IDBPDatabase } from 'idb';
 import {TypeBOutputText, TypeBInputStoryScript, ModI18NTypeB, TypeBI18NInputType} from "./TypeB";
 import JSZip, {JSZipStreamHelper} from "jszip";
 import {assert, is} from 'tsafe';
@@ -88,16 +89,7 @@ export class ModI18N {
     }
 
     patchVersionString() {
-
-        const selfZip: ModZipReader | undefined = this.modSC2DataManager.getModLoader().getModZip('ModI18N');
-        if (selfZip) {
-            // console.log('[i18n] selfZip.modInfo', selfZip.modInfo);
-            // console.log('[i18n] StartConfig', StartConfig);
-            if (selfZip.modInfo && selfZip.modInfo.version) {
-                // StartConfig.version = `${StartConfig.version}-(chs-${selfZip.modInfo.version})`;
-                StartConfig.versionName = `${StartConfig.versionName}-(chs-${selfZip.modInfo.version})`;
-            }
-        }
+        const selfZip = this.modSC2DataManager.getModLoader().getModZip('ModI18N');
     }
 
 
@@ -108,6 +100,25 @@ export class ModI18N {
         if (!selfZip) {
             this.logger.log('ModI18N zip not found');
             return;
+        }
+        const regex = /"([vV]\d+(?:\.\w+)+)"/;
+        const str = this.modSC2DataManager.getSC2DataInfoCache().passageDataItems.map.get('Version')?.content;
+        const match = str ? str.match(regex) : null;
+
+        if (match) {
+            const version = match[1];
+            const modI18N = this.modSC2DataManager.getModLoader().getModByNameOne('ModI18N');
+            if (modI18N && modI18N.mod.version.indexOf(version) === -1) {
+                if ((window as any).modSweetAlert2Mod) {
+                    (window as any).modSweetAlert2Mod.fire({
+                        title: '当前汉化与游戏版本不匹配！',
+                        text: "当前汉化适应" + modI18N.mod.version.split('-')[0] + "。当前游戏版本" + version + "！请重新加载正确的汉化或游戏版本。",
+                        icon: 'error',
+                        confirmButtonText: '我知道了'
+                    });
+                }
+                return;
+            }
         }
 
         // 获取mod的hash用于版本校验
@@ -305,7 +316,7 @@ export class ModI18N {
     private async I18NGetFromIDB(hash: ModZipReaderHash) {
         const hashKey = hash.toString();
         const db = await this.idbRef.idb_openDB('i18n-cache', 1, {
-            upgrade(db) {
+            upgrade(db: IDBPDatabase<any>) {
                 db.createObjectStore('translations', {keyPath: 'hash'});
             },
         });
