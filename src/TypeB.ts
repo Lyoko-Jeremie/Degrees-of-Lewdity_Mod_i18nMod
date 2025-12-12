@@ -185,6 +185,15 @@ class ModI18NTypeB_PassageMatcher {
             for (const v of pp) {
 
                 let d = ModI18NTypeB_PassageMatcher.tryReplaceStringFuzzyWithHintIndexComp(textArray, s, v, passageName, laxtIndex);
+
+                if (d.isError) {
+                    // error happened , skip this passage
+                    // add this logic to let we can have multi i18n mod work together.
+                    // like apply dol i18n in dolp then write a dolp specific i18n mod to replace it special text.
+                    console.warn('ModI18NTypeB_PassageMatcher replacePassageContentWithHintIndex skip passage due to error:', [passageName, v]);
+                    return passageContent;
+                }
+
                 textArray = d[0];
                 laxtIndex = d[1];
 
@@ -287,6 +296,7 @@ class ModI18NTypeB_PassageMatcher {
         to: string,
         pos: number
     }, passageNameOrFileName: string, lastIndex: number) {
+        let isError = false;
         // first , we try to match and replace with const string in +-2 , this is the fastest way
         if (ModI18NTypeB_PassageMatcher.isSubstringMatch(s, v.from, v.pos)) {
             textArray.push(s.substring(lastIndex, v.pos), v.to);
@@ -319,15 +329,17 @@ class ModI18NTypeB_PassageMatcher {
                 } else {
                     console.error('tryReplaceStringFuzzyWithHintIndexComp cannot find: ',
                         [v.from], ' in ', [passageNameOrFileName], ' at ', [v.pos], ' in ', [s.substring(v.pos - 10, v.pos + v.from.length + 10)]);
+                    isError = true;
                 }
                 re = undefined;
             } catch (e) {
                 console.error(e);
                 console.error('tryReplaceStringFuzzyWithHintIndexComp cannot find with error: ',
                     [v.from], ' in ', [passageNameOrFileName], ' at ', [v.pos], ' in ', [s.substring(v.pos - 10, v.pos + v.from.length + 10)]);
+                isError = true;
             }
         }
-        return {0: textArray, 1: lastIndex};
+        return {0: textArray, 1: lastIndex, isError: isError};
     }
 
     static tryReplaceStringFuzzyWithHint(s: string, v: {
