@@ -1,6 +1,6 @@
 {
   "name": "ModI18N",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "styleFileList": [
     "css-base-i18n-fix.css"
   ],
@@ -20,9 +20,23 @@
   ],
   "imgFileList": [
     "img/misc/locations/banner/banner_snow.png",
+    "img/misc/locations/banner/banner_snow2.png",
     "img/misc/locations/banner/banner_snow_blood.png",
-    "img/misc/locations/banner/banner_text.png",
-    "img/misc/locations/banner/banner_text_bloodmoon.png",
+    "img/misc/locations/banner/banner_tentacles_1.png",
+    "img/misc/locations/banner/banner_tentacles_2.png",
+    "img/misc/locations/banner/banner_tentacles_3.png",
+    "img/misc/locations/banner/banner_tentacles_4.png",
+    "img/misc/locations/banner/banner_tentacles_5.png",
+    "img/misc/locations/banner/banner_tentacles_bloodmoon_1.png",
+    "img/misc/locations/banner/banner_tentacles_bloodmoon_2.png",
+    "img/misc/locations/banner/banner_tentacles_bloodmoon_3.png",
+    "img/misc/locations/banner/banner_tentacles_bloodmoon_4.png",
+    "img/misc/locations/banner/banner_tentacles_bloodmoon_5.png",
+    "img/misc/locations/banner/bm_banner1.png",
+    "img/misc/locations/banner/ice.png",
+    "img/misc/locations/banner/reflective.png",
+    "img/misc/locations/banner/snow.png",
+    "img/misc/locations/banner/water.png",
     "img/misc/old/banner.png"
   ],
   "additionFile": [
