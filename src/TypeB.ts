@@ -112,75 +112,7 @@ export interface TypeBInputStoryScript {
     css?: boolean;
 }
 
-class ModI18NTypeB_OutputTextMatcher {
-
-    m: Map<string, TypeBOutputText>;
-    fastTest: RegExp;
-
-    constructor(
-        public mt: TypeBOutputText[],
-    ) {
-        console.log('ModI18NTypeB_OutputTextMatcher constructor', [mt]);
-        this.m = new Map<string, TypeBOutputText>(
-            this.mt.map((v) => {
-                return [ModI18NTypeB_normalizeSearchString(v.from.trim()), v];
-            }),
-        );
-        this.fastTest = new RegExp(Array.from(this.m.keys()).join("|"), 'g');
-    }
-
-    tryReplace(text: string) {
-        if (!text.trim()) {
-            return text;
-        }
-
-        // come from GPT-4
-        if (this.fastTest.test(text)) {
-
-            let matches = [];
-            let match;
-            while ((match = this.fastTest.exec(text)) !== null) {
-                matches.push({index: match.index, value: match[0]});
-            }
-            // 按照在 strA 中的起始位置排序
-            matches.sort((a, b) => a.index - b.index);
-            // 用于记录哪些索引已经被替换过，以避免重叠替换
-            let replacedIndices = new Set<number>();
-
-            let s = text;
-            for (const m of matches) {
-                let overlap = false;
-
-                for (let i = m.index; i < m.index + m.value.length; i++) {
-                    if (replacedIndices.has(i)) {
-                        overlap = true;
-                        break;
-                    }
-                }
-
-                if (!overlap) {
-                    let before = s.substring(0, m.index);
-                    let after = s.substring(m.index + m.value.length);
-                    s = before + this.m.get(m.value)!.to + after;
-
-                    for (let i = m.index; i < m.index + this.m.get(m.value)!.to.length; i++) {
-                        replacedIndices.add(i);
-                    }
-                }
-            }
-
-        }
-
-
-        return text;
-    }
-
-    destroy() {
-        this.m.clear();
-        this.mt = [];
-    }
-
-}
+// class ModI18NTypeB_OutputTextMatcher
 
 class ModI18NTypeB_PassageMatcher {
     constructor(
