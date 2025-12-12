@@ -8,7 +8,7 @@ import type {ModPackFileReaderJsZipAdaptor} from "../../../dist-BeforeSC2/ModPac
 import type {ModPackFileReader} from "../../../dist-BeforeSC2/ModPack/ModPack";
 
 import {JSONParser} from "@streamparser/json";
-import type { IDBPDatabase } from 'idb';
+import type { IDBPDatabase } from 'idb' assert { "resolution-mode": "import" };
 import {TypeBOutputText, TypeBInputStoryScript, ModI18NTypeB, TypeBI18NInputType} from "./TypeB";
 import JSZip, {JSZipStreamHelper} from "jszip";
 import {assert, is} from 'tsafe';
@@ -316,7 +316,7 @@ export class ModI18N {
     private async I18NGetFromIDB(hash: ModZipReaderHash) {
         const hashKey = hash.toString();
         const db = await this.idbRef.idb_openDB('i18n-cache', 1, {
-            upgrade(db: IDBPDatabase<any>) {
+            upgrade(db: IDBPDatabase<unknown>) {
                 db.createObjectStore('translations', {keyPath: 'hash'});
             },
         });
